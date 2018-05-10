@@ -16,7 +16,7 @@ apply plugin: 'io.spring.dependency-management'
 
 group = 'io.orvisual'
 version = '0.0.1-SNAPSHOT'
-sourceCompatibility = 9
+sourceCompatibility = 8
 
 repositories {
     mavenCentral()
@@ -37,7 +37,9 @@ repositories {
  * </code>
  */
 test {
-    jvmArgs += ['--add-modules',  'java.xml.bind']
+    if (JavaVersion.current() == JavaVersion.VERSION_1_9) {
+        jvmArgs += ['--add-modules',  'java.xml.bind']
+    }
 }
 
 
