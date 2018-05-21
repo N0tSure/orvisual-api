@@ -1,6 +1,6 @@
 package io.orvisual.api.service;
 
-import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.hash.Hashing;
 import io.orvisual.api.model.Picture;
 import io.orvisual.api.model.PictureFileItem;
@@ -9,6 +9,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.time.Instant;
+import java.util.Map;
+import java.util.Optional;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -24,22 +26,57 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public class MultiPartFileToPictureFileItemConverter implements Converter<MultipartFile, PictureFileItem> {
 
+    private static final Map<String, String> MIME_TYPES_MAP = ImmutableMap.of(
+            "image/jpeg", "jpg",
+            "image/png", "png",
+            "image/gif", "gif",
+            "image/bmp", "bmp"
+    );
+
+
+    /**
+     * This method returns file extension for MIME type given as hint. Look about MIME type on
+     * <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types">MDN</a>.
+     * Supported MIME types:
+     * <ul>
+     *     <li>image/jpeg</li>
+     *     <li>image/png</li>
+     *     <li>image/gif</li>
+     *     <li>image/bmp</li>
+     * </ul>
+     *
+     * @param hint MIME content type from HTTP request
+     * @return file extension associated with this MIME type
+     * @throws IllegalStateException in case of unsupported type was given
+     */
+    private static String lookupFileExtension(final String hint) {
+        return Optional
+                .ofNullable(
+                        MIME_TYPES_MAP.get(
+                        checkNotNull(hint.toLowerCase(), "content type must not be null"))
+                ).orElseThrow(() -> new IllegalStateException("Unsupported media type: " + hint));
+    }
+
+
     @Override
     public PictureFileItem convert(final MultipartFile source) {
+
         PictureFileItem result = null;
         if (!source.isEmpty()) {
             try {
                 final byte[] multipartContent = source.getBytes();
                 final String checksum = Hashing.sha256().hashBytes(multipartContent).toString();
                 final String directoryName = checksum.substring(0, 4);
-                final String fileName = String.format("%s.jpg", checksum);
+                final String fileName =
+                        String.format("%s.%s", checksum, lookupFileExtension(source.getContentType()));
+
                 result = new PictureFileItem(
                         new Picture(checksum, fileName, directoryName, Instant.now()),
                         multipartContent
                 );
 
             } catch (IOException exc) {
-
+                throw new PictureFileProcessingException("Error while checksum calculation", exc);
             }
         }
 

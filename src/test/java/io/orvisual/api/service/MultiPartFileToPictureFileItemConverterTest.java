@@ -20,8 +20,6 @@ import static org.junit.Assert.*;
  * Created on 20.05.2018.
  * </p>
  *
- *
- *
  * @author Artemis A. Sirosh
  */
 @RunWith(JUnit4.class)
