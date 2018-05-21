@@ -17,6 +17,9 @@ import java.time.Instant;
  * Attribute description:
  * <li>
  *     <ul>
+ *         {@code checksum} -- file's checksum
+ *     </ul>
+ *     <ul>
  *         {@code fileName} -- file's of file with extension
  *     </ul>
  *     <ul>
@@ -36,9 +39,7 @@ import java.time.Instant;
 public class Picture {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
-
+    private String checksum;
     private String fileName;
     private String directory;
     private Instant loadedAt;
