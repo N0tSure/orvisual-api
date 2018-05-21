@@ -8,6 +8,9 @@ import org.springframework.web.bind.annotation.ResponseStatus;
  * Created on 21.05.2018.
  * </p>
  *
+ * This exception will thrown, in case of error during uploaded file process, i.e. create directory, check directory,
+ * write file or something.
+ *
  * @author Artemis A. Sirosh
  */
 @ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR, reason = "error during picture file processing")
