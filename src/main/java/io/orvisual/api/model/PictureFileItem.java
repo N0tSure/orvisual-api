@@ -2,6 +2,7 @@ package io.orvisual.api.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.Value;
 
 /**
  * <p>
@@ -13,11 +14,11 @@ import lombok.Data;
  *
  * @author Artemis A. Sirosh
  */
-@Data
+@Value
 @AllArgsConstructor
 public class PictureFileItem {
 
-    private Picture pictureItem;
-    private byte[] fileContent;
+    private final Picture pictureItem;
+    private final byte[] fileContent;
 
 }
