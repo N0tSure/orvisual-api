@@ -15,6 +15,6 @@ import java.util.Optional;
  * @author Artemis A. Sirosh
  */
 @RepositoryRestResource(exported = false)
-public interface PictureRepository extends CrudRepository<Picture, Long> {
+public interface PictureRepository extends CrudRepository<Picture, String> {
 
 }
