@@ -6,10 +6,12 @@ import io.orvisual.api.model.Picture;
 import io.orvisual.api.model.PictureFileItem;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.lang.NonNull;
 
 import java.io.IOException;
 import java.time.Instant;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -51,15 +53,13 @@ public class MultiPartFileToPictureFileItemConverter implements Converter<Multip
      */
     private static String lookupFileExtension(final String hint) {
         return Optional
-                .ofNullable(
-                        MIME_TYPES_MAP.get(
-                        checkNotNull(hint.toLowerCase(), "content type must not be null"))
-                ).orElseThrow(() -> new IllegalStateException("Unsupported media type: " + hint));
+                .ofNullable(MIME_TYPES_MAP.get(hint.toLowerCase()))
+                .orElseThrow(() -> new IllegalStateException("Unsupported media type: " + hint));
     }
 
 
     @Override
-    public PictureFileItem convert(final MultipartFile source) {
+    public PictureFileItem convert(final @NonNull MultipartFile source) {
 
         PictureFileItem result = null;
         if (!source.isEmpty()) {
@@ -67,8 +67,13 @@ public class MultiPartFileToPictureFileItemConverter implements Converter<Multip
                 final byte[] multipartContent = source.getBytes();
                 final String checksum = Hashing.sha256().hashBytes(multipartContent).toString();
                 final String directoryName = checksum.substring(0, 4);
-                final String fileName =
-                        String.format("%s.%s", checksum, lookupFileExtension(source.getContentType()));
+                final String fileName = String.format(
+                        "%s.%s",
+                        checksum,
+                        lookupFileExtension(
+                                checkNotNull(source.getContentType(), "content type must not be null")
+                        )
+                );
 
                 result = new PictureFileItem(
                         new Picture(checksum, fileName, directoryName, Instant.now()),
