@@ -61,23 +61,8 @@ public class FileStorageServiceTest {
     }
 
     @Test
-    public void shouldFoundAlreadySavedPicture() {
-        PictureFileItem alreadyExistItem = pictureSupplier().get();
-        when(repository.findById(alreadyExistItem.getPictureItem().getChecksum()))
-                .thenReturn(Optional.of(alreadyExistItem.getPictureItem()));
-
-        Picture actualPicture = storageService.savePictureFileItem(alreadyExistItem);
-
-        assertEquals(alreadyExistItem.getPictureItem(), actualPicture);
-
-        verify(repository).findById(alreadyExistItem.getPictureItem().getChecksum());
-
-    }
-
-    @Test
     public void shouldCreateDirectoryForPicture() {
         PictureFileItem item = pictureSupplier().get();
-        when(repository.findById(anyString())).thenReturn(Optional.empty());
 
         Path expectedDirectoryPath = this.rootPath.resolve(item.getPictureItem().getDirectory());
         LOGGER.info("Expected directory: {}", expectedDirectoryPath);
@@ -182,20 +167,6 @@ public class FileStorageServiceTest {
         assertTrue("sanity check", Files.exists(file) && Files.isDirectory(file));
 
         storageService.savePictureFileItem(item);
-    }
-
-    @Test
-    public void shouldPersisPictureMetadataInstance() {
-        PictureFileItem item = pictureSupplier().get();
-        LOGGER.info("Picture file item: {}", item);
-
-        when(repository.save(item.getPictureItem())).thenReturn(item.getPictureItem());
-
-        Picture actualPicture = storageService.savePictureFileItem(item);
-        LOGGER.info("Actual picture: {}", actualPicture);
-
-        verify(repository).save(item.getPictureItem());
-        assertEquals(item.getPictureItem(), actualPicture);
     }
 
     private static Supplier<PictureFileItem> pictureSupplier() {

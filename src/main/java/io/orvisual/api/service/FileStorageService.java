@@ -36,47 +36,34 @@ public class FileStorageService {
     /**
      * Saves image transport object. First this method saves file, second persist {@link Picture} instance.
      * @param pictureFileItem image transport object, must not be {@code null}
-     * @return metadata object instance for existed image
      * @throws PictureFileProcessingException in case of error during IO operations
      */
-    public Picture savePictureFileItem(@NonNull PictureFileItem pictureFileItem) {
-        Optional<Picture> optional = repository.findById(pictureFileItem.getPictureItem().getChecksum());
-        Picture result;
-        if (!optional.isPresent()) {
+    public void savePictureFileItem(@NonNull PictureFileItem pictureFileItem) {
 
-            Path pictureDirectoryPath;
-            try {
-                pictureDirectoryPath = getPictureDirectory(pictureFileItem.getPictureItem());
-                LOGGER.debug("Directory for new picture file item:", pictureDirectoryPath);
-            } catch (IOException exc) {
-                LOGGER.warn("Creation of directory failed", exc);
-                throw new PictureFileProcessingException("Creation of directory failed", exc);
-            }
+        Path pictureDirectoryPath;
+        try {
 
-            Path pictureFilePath = pictureDirectoryPath.resolve(pictureFileItem.getPictureItem().getFileName());
+            pictureDirectoryPath = this.rootPath.resolve(pictureFileItem.getPictureItem().getDirectory());
+            if (!Files.exists(pictureDirectoryPath))
+                Files.createDirectories(pictureDirectoryPath);
 
-            try {
-                Files.write(pictureFilePath, pictureFileItem.getFileContent());
-                LOGGER.debug("Picture file recorded as: {}", pictureFilePath);
-            } catch (IOException exc) {
-                LOGGER.warn("Recording of picture file failed", exc);
-                throw new PictureFileProcessingException("Recording of picture file failed", exc);
-            }
-
-            result = repository.save(pictureFileItem.getPictureItem());
-        } else {
-            result = optional.get();
+            LOGGER.debug("Directory for new picture file item:", pictureDirectoryPath);
+        } catch (IOException exc) {
+            LOGGER.warn("Creation of directory failed", exc);
+            throw new PictureFileProcessingException("Creation of directory failed", exc);
         }
 
-        return result;
+        Path pictureFilePath = pictureDirectoryPath.resolve(pictureFileItem.getPictureItem().getFileName());
+
+        try {
+
+            Files.write(pictureFilePath, pictureFileItem.getFileContent());
+            LOGGER.debug("Picture file recorded as: {}", pictureFilePath);
+        } catch (IOException exc) {
+            LOGGER.warn("Recording of picture file failed", exc);
+            throw new PictureFileProcessingException("Recording of picture file failed", exc);
+        }
+
     }
 
-    private Path getPictureDirectory(Picture picture) throws IOException {
-        Path directoryPath = this.rootPath.resolve(picture.getDirectory());
-        if (!Files.exists(directoryPath)) {
-            return Files.createDirectories(directoryPath);
-        } else {
-            return directoryPath;
-        }
-    }
 }
