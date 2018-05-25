@@ -51,8 +51,8 @@ public class FileStorageServiceTest {
     private FileStorageService storageService;
 
     @Before
-    public void setUp() {
-        this.rootPath = Paths.get(temporaryFolder.getRoot().toURI());
+    public void setUp() throws Exception {
+        this.rootPath = Paths.get(temporaryFolder.newFolder().toURI());
         this.storageService = new FileStorageService(this.rootPath, this.repository);
     }
 
