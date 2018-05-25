@@ -41,6 +41,7 @@ public class Picture {
     @Id
     private String checksum;
     private String fileName;
+    private String mimeType;
     private String directory;
     private Instant loadedAt;
 

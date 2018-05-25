@@ -14,7 +14,9 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.MediaType;
 
+import java.awt.*;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -88,14 +90,19 @@ public class FileStorageServiceTest {
     }
 
     @Test
-    public void shouldSaveFileInExistedDir() throws Exception {
+    public void shouldSaveFileInExistedDir() {
         final String checksumExpected = Hashing.sha256().hashBytes(OKLAHOMA_BYTES).toString();
         final String nameOfFileExpected = checksumExpected + ".jpg";
         final String directoryNameExpected = checksumExpected.substring(0, 4);
 
         final PictureFileItem fileItem = new PictureFileItem(
-                new Picture(checksumExpected, nameOfFileExpected, directoryNameExpected, Instant.EPOCH),
-                OKLAHOMA_BYTES
+                new Picture(
+                        checksumExpected,
+                        nameOfFileExpected,
+                        MediaType.IMAGE_JPEG_VALUE,
+                        directoryNameExpected,
+                        Instant.EPOCH
+                ), OKLAHOMA_BYTES
         );
         LOGGER.info("Picture file item: {}", fileItem);
 
@@ -138,6 +145,7 @@ public class FileStorageServiceTest {
                 new Picture(
                         checksumExpected,
                         checksumExpected + ".jpg",
+                        MediaType.IMAGE_JPEG_VALUE,
                         checksumExpected.substring(0, 4),
                         Instant.EPOCH
                 ), OKLAHOMA_BYTES
@@ -196,6 +204,7 @@ public class FileStorageServiceTest {
                 new Picture(
                         sha256Function.hashBytes(new byte[]{}).toString(),
                         "foo.jpg",
+                        MediaType.IMAGE_JPEG_VALUE,
                         "bar",
                         Instant.EPOCH
                 ),

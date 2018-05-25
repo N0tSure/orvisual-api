@@ -76,7 +76,7 @@ public class MultiPartFileToPictureFileItemConverter implements Converter<Multip
                 );
 
                 result = new PictureFileItem(
-                        new Picture(checksum, fileName, directoryName, Instant.now()),
+                        new Picture(checksum, fileName, source.getContentType(), directoryName, Instant.now()),
                         multipartContent
                 );
 
