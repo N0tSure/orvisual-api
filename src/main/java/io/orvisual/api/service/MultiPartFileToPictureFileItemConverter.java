@@ -5,13 +5,13 @@ import com.google.common.hash.Hashing;
 import io.orvisual.api.model.Picture;
 import io.orvisual.api.model.PictureFileItem;
 import org.springframework.core.convert.converter.Converter;
-import org.springframework.web.multipart.MultipartFile;
+import org.springframework.http.MediaType;
 import org.springframework.lang.NonNull;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.time.Instant;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -29,9 +29,9 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public class MultiPartFileToPictureFileItemConverter implements Converter<MultipartFile, PictureFileItem> {
 
     private static final Map<String, String> MIME_TYPES_MAP = ImmutableMap.of(
-            "image/jpeg", "jpg",
-            "image/png", "png",
-            "image/gif", "gif",
+            MediaType.IMAGE_JPEG_VALUE, "jpg",
+            MediaType.IMAGE_PNG_VALUE, "png",
+            MediaType.IMAGE_GIF_VALUE, "gif",
             "image/bmp", "bmp"
     );
 

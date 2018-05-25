@@ -14,25 +14,17 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.core.io.FileSystemResource;
-import org.springframework.core.io.PathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.MediaType;
 
-import java.awt.*;
 import java.io.IOException;
-import java.nio.channels.Channels;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.Instant;
-import java.util.Optional;
 import java.util.function.Supplier;
 
 import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 /**
  * <p>
@@ -46,7 +38,7 @@ public class FileStorageServiceTest {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(FileStorageServiceTest.class);
 
-    private final byte[] OKLAHOMA_BYTES = new byte[]{'O', 'K', 'L', 'A', 'H', 'O', 'M', 'A'};
+    private static final byte[] OKLAHOMA_BYTES = new byte[]{'O', 'K', 'L', 'A', 'H', 'O', 'M', 'A'};
     
     @Rule
     public final TemporaryFolder temporaryFolder = new TemporaryFolder();
@@ -193,17 +185,49 @@ public class FileStorageServiceTest {
         assertTrue(resource.isFile());
     }
 
+    @Test
+    public void shouldDeletePictureFile() throws IOException {
+        PictureFileItem item = pictureSupplier().get();
+        LOGGER.info("Picture file item: {}", item);
+
+        Path directory = this.rootPath.resolve(item.getPictureItem().getDirectory());
+        LOGGER.info("Directory: {}", directory);
+
+        Path file = directory.resolve(item.getPictureItem().getFileName());
+        LOGGER.info("Picture file: {}", file);
+
+        Files.createDirectories(directory);
+        Files.write(file, item.getFileContent());
+
+        storageService.deleteFile(item.getPictureItem());
+
+        assertTrue("Directory not exists", Files.exists(directory));
+        assertFalse("File yet exists", Files.exists(file));
+    }
+
+    @Test(expected = PictureFileProcessingException.class)
+    public void shouldProcessExceptionWhileFileDeleting() throws IOException {
+        PictureFileItem item = pictureSupplier().get();
+        LOGGER.info("Picture file item: {}", item);
+
+        Path directory = this.rootPath.resolve(item.getPictureItem().getDirectory());
+        LOGGER.info("Directory: {}", directory);
+
+        Files.createDirectories(directory);
+
+        storageService.deleteFile(item.getPictureItem());
+    }
+
     private static Supplier<PictureFileItem> pictureSupplier() {
         final HashFunction sha256Function = Hashing.sha256();
         return () -> new PictureFileItem(
                 new Picture(
-                        sha256Function.hashBytes(new byte[]{}).toString(),
+                        sha256Function.hashBytes(OKLAHOMA_BYTES).toString(),
                         "foo.jpg",
                         MediaType.IMAGE_JPEG_VALUE,
                         "bar",
                         Instant.EPOCH
-                ),
-                new byte[]{}
+                ), OKLAHOMA_BYTES
         );
     }
 }

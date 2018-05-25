@@ -12,7 +12,6 @@ import org.springframework.core.io.Resource;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Optional;
 
 /**
  * <p>
@@ -75,5 +74,19 @@ public class FileStorageService {
      */
     public Resource resolvePictureResource(Picture picture) {
         return new PathResource(this.rootPath.resolve(picture.getDirectory()).resolve(picture.getFileName()));
+    }
+
+    /**
+     * Determines path to picture file using {@link Picture} and deletes it from file system.
+     * @param picture metadata object instance of picture file
+     * @throws PictureFileProcessingException in case of error while file deleting
+     */
+    public void deleteFile(Picture picture) {
+        try {
+            Files.delete(this.rootPath.resolve(picture.getDirectory()).resolve(picture.getFileName()));
+        } catch (IOException exc) {
+            LOGGER.warn("File deleting failed", exc);
+            throw new PictureFileProcessingException("Deleting of file failed", exc);
+        }
     }
 }
