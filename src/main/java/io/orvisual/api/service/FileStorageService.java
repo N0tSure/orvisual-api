@@ -6,6 +6,8 @@ import io.orvisual.api.repository.PictureRepository;
 import lombok.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.io.PathResource;
+import org.springframework.core.io.Resource;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -66,4 +68,12 @@ public class FileStorageService {
 
     }
 
+    /**
+     * Resolves pictures {@link Resource} using metadata from {@link Picture} instance
+     * @param picture metadata object instance
+     * @return {@link Resource} instance
+     */
+    public Resource resolvePictureResource(Picture picture) {
+        return new PathResource(this.rootPath.resolve(picture.getDirectory()).resolve(picture.getFileName()));
+    }
 }

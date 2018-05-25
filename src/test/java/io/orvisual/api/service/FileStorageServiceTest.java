@@ -14,10 +14,14 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.PathResource;
+import org.springframework.core.io.Resource;
 import org.springframework.http.MediaType;
 
 import java.awt.*;
 import java.io.IOException;
+import java.nio.channels.Channels;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -167,6 +171,26 @@ public class FileStorageServiceTest {
         assertTrue("sanity check", Files.exists(file) && Files.isDirectory(file));
 
         storageService.savePictureFileItem(item);
+    }
+
+    @Test
+    public void shouldReturnResourceToPictureFile() throws IOException {
+        Picture picture = pictureSupplier().get().getPictureItem();
+        LOGGER.info("Picture: {}", picture);
+
+        Path parentDir = this.rootPath.resolve(picture.getDirectory());
+        LOGGER.info("Picture directory: {}", parentDir);
+
+        Path pictureFile = parentDir.resolve(picture.getFileName());
+        LOGGER.info("Picture file directory: {}", pictureFile);
+
+        Files.createDirectories(parentDir);
+        Files.createFile(pictureFile);
+
+        Resource resource = storageService.resolvePictureResource(picture);
+
+        assertTrue(resource.exists());
+        assertTrue(resource.isFile());
     }
 
     private static Supplier<PictureFileItem> pictureSupplier() {
