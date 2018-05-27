@@ -7,6 +7,7 @@ import io.orvisual.api.model.PictureFileItem;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.http.MediaType;
 import org.springframework.lang.NonNull;
+import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -26,6 +27,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  *
  * @author Artemis A. Sirosh
  */
+@Component
 public class MultiPartFileToPictureFileItemConverter implements Converter<MultipartFile, PictureFileItem> {
 
     private static final Map<String, String> MIME_TYPES_MAP = ImmutableMap.of(

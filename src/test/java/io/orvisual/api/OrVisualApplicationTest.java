@@ -10,8 +10,9 @@ import org.springframework.test.context.junit4.SpringRunner;
 /**
  * Created on 09 May, 2018.
  *
- * <b>WARNING:</b> no file operation in this test, these operation can
- * change local directory content.
+ * <b>WARNING:</b> do not use file operations of {@link io.orvisual.api.service.FileStorageService} in this test,
+ * these operation can change local directory content during test running.
+ *
  * @author Artemis A. Sirosh
  */
 @SpringBootTest(properties = "GALLERY_DIR=.")

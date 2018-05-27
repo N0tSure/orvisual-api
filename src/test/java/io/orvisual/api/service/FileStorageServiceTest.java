@@ -2,6 +2,7 @@ package io.orvisual.api.service;
 
 import com.google.common.hash.HashFunction;
 import com.google.common.hash.Hashing;
+import io.orvisual.api.TestHelper;
 import io.orvisual.api.model.Picture;
 import io.orvisual.api.model.PictureFileItem;
 import io.orvisual.api.repository.PictureRepository;
@@ -46,6 +47,7 @@ public class FileStorageServiceTest {
     private Path rootPath;
 
     private FileStorageService storageService;
+    private final Supplier<PictureFileItem> fileItemSupplier = TestHelper.pictureSupplier();
 
     @Before
     public void setUp() throws Exception {
@@ -55,7 +57,7 @@ public class FileStorageServiceTest {
 
     @Test
     public void shouldCreateDirectoryForPicture() {
-        PictureFileItem item = pictureSupplier().get();
+        PictureFileItem item = fileItemSupplier.get();
 
         Path expectedDirectoryPath = this.rootPath.resolve(item.getPictureItem().getDirectory());
         LOGGER.info("Expected directory: {}", expectedDirectoryPath);
@@ -100,7 +102,7 @@ public class FileStorageServiceTest {
 
     @Test(expected = PictureFileProcessingException.class)
     public void shouldProcessExceptionWhileFileDirectoryCreated() throws IOException {
-        PictureFileItem item = pictureSupplier().get();
+        PictureFileItem item = fileItemSupplier.get();
         LOGGER.info("Picture file item: {}", item);
 
         Path expectedDirectory = this.rootPath.resolve(item.getPictureItem().getDirectory());
@@ -145,7 +147,7 @@ public class FileStorageServiceTest {
 
     @Test(expected = PictureFileProcessingException.class)
     public void shouldProcessExceptionWhileWritingFile() throws IOException {
-        PictureFileItem item = pictureSupplier().get();
+        PictureFileItem item = fileItemSupplier.get();
         LOGGER.info("Picture file item: {}", item);
 
         Path directory = this.rootPath.resolve(item.getPictureItem().getDirectory());
@@ -164,7 +166,7 @@ public class FileStorageServiceTest {
 
     @Test
     public void shouldReturnResourceToPictureFile() throws IOException {
-        Picture picture = pictureSupplier().get().getPictureItem();
+        Picture picture = fileItemSupplier.get().getPictureItem();
         LOGGER.info("Picture: {}", picture);
 
         Path parentDir = this.rootPath.resolve(picture.getDirectory());
@@ -184,7 +186,7 @@ public class FileStorageServiceTest {
 
     @Test
     public void shouldDeletePictureFile() throws IOException {
-        PictureFileItem item = pictureSupplier().get();
+        PictureFileItem item = fileItemSupplier.get();
         LOGGER.info("Picture file item: {}", item);
 
         Path directory = this.rootPath.resolve(item.getPictureItem().getDirectory());
@@ -204,7 +206,7 @@ public class FileStorageServiceTest {
 
     @Test(expected = PictureFileProcessingException.class)
     public void shouldProcessExceptionWhileFileDeleting() throws IOException {
-        PictureFileItem item = pictureSupplier().get();
+        PictureFileItem item = fileItemSupplier.get();
         LOGGER.info("Picture file item: {}", item);
 
         Path directory = this.rootPath.resolve(item.getPictureItem().getDirectory());
@@ -215,16 +217,4 @@ public class FileStorageServiceTest {
         storageService.deleteFile(item.getPictureItem());
     }
 
-    private static Supplier<PictureFileItem> pictureSupplier() {
-        final HashFunction sha256Function = Hashing.sha256();
-        return () -> new PictureFileItem(
-                new Picture(
-                        sha256Function.hashBytes(OKLAHOMA_BYTES).toString(),
-                        "foo.jpg",
-                        MediaType.IMAGE_JPEG_VALUE,
-                        "bar",
-                        Instant.EPOCH
-                ), OKLAHOMA_BYTES
-        );
-    }
 }
