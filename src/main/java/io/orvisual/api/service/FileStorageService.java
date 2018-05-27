@@ -70,7 +70,7 @@ public class FileStorageService {
      * @param picture metadata object instance
      * @return {@link Resource} instance
      */
-    public Resource resolvePictureResource(Picture picture) {
+    public Resource resolvePictureResource(@NonNull Picture picture) {
         return new PathResource(this.rootPath.resolve(picture.getDirectory()).resolve(picture.getFileName()));
     }
 
@@ -79,9 +79,10 @@ public class FileStorageService {
      * @param picture metadata object instance of picture file
      * @throws PictureFileProcessingException in case of error while file deleting
      */
-    public void deleteFile(Picture picture) {
+    public void deleteFile(@NonNull Picture picture) {
         try {
             Files.delete(this.rootPath.resolve(picture.getDirectory()).resolve(picture.getFileName()));
+            LOGGER.debug("Picture file '{}' has been deleted.", picture.getFileName());
         } catch (IOException exc) {
             LOGGER.warn("File deleting failed", exc);
             throw new PictureFileProcessingException("Deleting of file failed", exc);

@@ -45,9 +45,6 @@ public class FileStorageServiceTest {
 
     private Path rootPath;
 
-    @Mock
-    private PictureRepository repository;
-
     private FileStorageService storageService;
 
     @Before

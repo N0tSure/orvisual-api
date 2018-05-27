@@ -32,13 +32,11 @@ public class FileStorageServiceFactoryBeanTest {
     @Rule
     public final TemporaryFolder temporaryFolder = new TemporaryFolder();
 
-    private Path rootPath;
     private Path galleryPath;
 
     @Before
     public void setUpEnvironment() throws Exception {
-        this.rootPath = Paths.get(temporaryFolder.newFolder().toURI());
-        this.galleryPath = this.rootPath.resolve("gallery");
+        this.galleryPath = Paths.get(temporaryFolder.newFolder().toURI()).resolve("gallery");
         this.environmentVariables.set("GALLERY_DIR", this.galleryPath.toString());
     }
 
