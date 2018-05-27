@@ -3,20 +3,17 @@ package io.orvisual.api.service;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.contrib.java.lang.system.EnvironmentVariables;
 import org.junit.rules.TemporaryFolder;
-import org.junit.runner.RunWith;
-import org.junit.runners.JUnit4;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.beans.factory.FactoryBean;
-import org.springframework.core.env.Environment;
+import org.springframework.beans.factory.BeanCreationException;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.when;
+import static org.junit.Assert.assertNotNull;
 
 /**
  * <p>
@@ -27,37 +24,49 @@ import static org.mockito.Mockito.when;
  *
  * @author Artemis A. Sirosh
  */
-@RunWith(MockitoJUnitRunner.class)
 public class FileStorageServiceFactoryBeanTest {
 
     @Rule
-    public TemporaryFolder temporaryFolder = new TemporaryFolder();
+    public final EnvironmentVariables environmentVariables = new EnvironmentVariables();
+
+    @Rule
+    public final TemporaryFolder temporaryFolder = new TemporaryFolder();
 
     private Path rootPath;
-    private FactoryBean<FileStorageService> factoryBean;
-
-    @Mock
-    private Environment environment;
+    private Path galleryPath;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUpEnvironment() throws Exception {
         this.rootPath = Paths.get(temporaryFolder.newFolder().toURI());
-        this.factoryBean = new FileStorageServiceFactoryBean(environment);
+        this.galleryPath = this.rootPath.resolve("gallery");
+        this.environmentVariables.set("GALLERY_DIR", this.galleryPath.toString());
+    }
+
+    @Test(expected = BeanCreationException.class)
+    public void shouldDetectNotExistentGalleryDirectory() {
+        try (AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext()) {
+            context.registerBean(FileStorageServiceFactoryBean.class);
+            context.refresh();
+        }
+    }
+
+    @Test(expected = BeanCreationException.class)
+    public void shouldRejectFileAsGallery() throws IOException {
+        Files.createFile(galleryPath);
+        try (AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext()) {
+            context.registerBean(FileStorageServiceFactoryBean.class);
+            context.refresh();
+        }
     }
 
     @Test
-    public void shouldReturnCorrectType() {
-        assertEquals(FileStorageService.class, factoryBean.getObjectType());
+    public void shouldCreateFileStorageService() throws IOException {
+        Files.createDirectory(galleryPath);
+        try (AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext()) {
+            context.registerBean(FileStorageServiceFactoryBean.class);
+            context.refresh();
+
+            assertNotNull(context.getBean(FileStorageService.class));
+        }
     }
-
-    @Test(expected = IllegalStateException.class)
-    public void shouldAssertNotExistedDirectory() throws Exception {
-
-        when(environment.getRequiredProperty("GALLERY_DIR"))
-                .thenReturn(this.rootPath.resolve("gallery").toUri().toString());
-
-        this.factoryBean.getObject();
-    }
-
-
 }
