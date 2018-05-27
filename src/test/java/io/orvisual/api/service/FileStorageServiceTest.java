@@ -53,7 +53,7 @@ public class FileStorageServiceTest {
     @Before
     public void setUp() throws Exception {
         this.rootPath = Paths.get(temporaryFolder.newFolder().toURI());
-        this.storageService = new FileStorageService(this.rootPath, this.repository);
+        this.storageService = new FileStorageService(this.rootPath);
     }
 
     @Test

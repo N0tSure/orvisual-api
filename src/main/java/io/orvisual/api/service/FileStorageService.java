@@ -27,11 +27,9 @@ public class FileStorageService {
     private static final Logger LOGGER = LoggerFactory.getLogger(FileStorageService.class);
 
     private final Path rootPath;
-    private final PictureRepository repository;
 
-    public FileStorageService(@NonNull Path rootPath, @NonNull PictureRepository repository) {
+    public FileStorageService(@NonNull Path rootPath) {
         this.rootPath = rootPath;
-        this.repository = repository;
     }
 
     /**
