@@ -171,7 +171,7 @@ public class FileControllerTest {
 
         mockMvc.perform(get("/images"))
                 .andDo(log())
-                .andExpect(status().isNotFound());
+                .andExpect(status().isMethodNotAllowed());
 
         verify(pictureRepository, never()).findById(any());
         verify(storageService, never()).resolvePictureResource(any());

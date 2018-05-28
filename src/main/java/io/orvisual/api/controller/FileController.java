@@ -4,12 +4,11 @@ import io.orvisual.api.model.Picture;
 import io.orvisual.api.model.PictureFileItem;
 import io.orvisual.api.repository.PictureRepository;
 import io.orvisual.api.service.FileStorageService;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
 
@@ -41,5 +40,15 @@ public class FileController {
             storageService.savePictureFileItem(fileItem);
             return ResponseEntity.status(HttpStatus.CREATED).body(pictureRepository.save(fileItem.getPictureItem()));
         }
+    }
+
+    @GetMapping("/{checksum}")
+    public ResponseEntity<?> findImageFile(@PathVariable("checksum") String checksum) {
+        Optional<Picture> optionalPicture = pictureRepository.findById(checksum);
+        return optionalPicture.<ResponseEntity<?>>map(picture -> ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_TYPE, picture.getMimeType())
+                .body(storageService.resolvePictureResource(picture)))
+                .orElseGet(() -> ResponseEntity.notFound().build());
+
     }
 }
