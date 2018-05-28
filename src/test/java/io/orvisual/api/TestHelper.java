@@ -23,12 +23,30 @@ public final class TestHelper {
 
     private static final byte[] OKLAHOMA_BYTES = new byte[]{'O', 'K', 'L', 'A', 'H', 'O', 'M', 'A'};
 
+    /**
+     * Creates {@link ArgumentMatcher} implementation for test purpose, which check for equality
+     * of to {@link Picture} instance, but ignore {@link Picture#getLoadedAt()} field, which might
+     * be unpredictable on runtime.
+     *
+     * @param expectedPicture expected {@link Picture}, must be not {@code null}.
+     * @return {@link ArgumentMatcher} instance
+     * @see ArgumentMatcher
+     */
     public static ArgumentMatcher<Picture> ignoreUnPredictableAttributes(final @NonNull Picture expectedPicture) {
         return argument ->
                 expectedPicture.getChecksum().equals(argument.getChecksum()) &&
                 expectedPicture.getMimeType().equals(argument.getMimeType());
     }
 
+    /**
+     * Creates {@link ArgumentMatcher} implementation for test purpose, which check for equality
+     * of to {@link PictureFileItem} instance, but ignore {@link Picture#getLoadedAt()} field,
+     * of {@link PictureFileItem#getPictureItem()}, which might be unpredictable on runtime.
+     *
+     * @param expectedItem expected {@link PictureFileItem} instance, must be not {@code null}.
+     * @return {@link ArgumentMatcher} instance
+     * @see ArgumentMatcher
+     */
     public static ArgumentMatcher<PictureFileItem> ignoreUnPredictableAttributes(final @NonNull PictureFileItem expectedItem) {
         return argument ->
                 expectedItem.getPictureItem().getChecksum().equals(argument.getPictureItem().getChecksum()) &&
@@ -36,6 +54,12 @@ public final class TestHelper {
                         Arrays.equals(expectedItem.getFileContent(), argument.getFileContent());
     }
 
+    /**
+     * Return {@link Supplier} which can used for generation of
+     * {@link PictureFileItem} for test purposes.
+     *
+     * @return {@link PictureFileItem} which never be {@code null}
+     */
     public static Supplier<PictureFileItem> pictureSupplier() {
         final HashFunction sha256Function = Hashing.sha256();
         return () -> new PictureFileItem(

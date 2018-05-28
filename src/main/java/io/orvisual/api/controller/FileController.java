@@ -17,6 +17,9 @@ import java.util.Optional;
  * Created on 20.05.2018.
  * </p>
  *
+ * Operates with {@link Picture} metadata object and image files. Supported operations:
+ * {@code POST} for {@code /images}, and {@code GET and POST} for {@code /images/{checksum}}.
+ *
  * @author Artemis A. Sirosh
  */
 @Controller
@@ -58,8 +61,8 @@ public class FileController {
         ResponseEntity<?> response;
         if (optionalPicture.isPresent()) {
 
-            storageService.deleteFile(optionalPicture.get());
             pictureRepository.delete(optionalPicture.get());
+            storageService.deleteFile(optionalPicture.get());
             response = ResponseEntity.noContent().build();
         } else {
             response = ResponseEntity.notFound().build();
