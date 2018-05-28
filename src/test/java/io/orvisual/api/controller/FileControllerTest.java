@@ -1,17 +1,12 @@
 package io.orvisual.api.controller;
 
 import io.orvisual.api.TestHelper;
-import io.orvisual.api.model.Picture;
 import io.orvisual.api.model.PictureFileItem;
 import io.orvisual.api.repository.PictureRepository;
 import io.orvisual.api.service.FileStorageService;
 import io.orvisual.api.service.PictureFileProcessingException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -26,15 +21,10 @@ import java.util.function.Supplier;
 
 import static io.orvisual.api.TestHelper.ignoreUnPredictableAttributes;
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.log;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -49,8 +39,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @RunWith(SpringRunner.class)
 public class FileControllerTest {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(FileControllerTest.class);
-
     private final Supplier<PictureFileItem> fileItemSupplier = TestHelper.pictureSupplier();
 
     @MockBean
@@ -58,9 +46,6 @@ public class FileControllerTest {
 
     @MockBean
     private PictureRepository pictureRepository;
-
-    @Captor
-    private ArgumentCaptor<PictureFileItem> pictureFileItemCaptor;
 
     @Autowired
     private MockMvc mockMvc;
@@ -90,11 +75,12 @@ public class FileControllerTest {
     }
 
     @Test
+    @SuppressWarnings("ConstantConditions")
     public void shouldSaveNewPicture() throws Exception {
         final PictureFileItem expectedFileItem = fileItemSupplier.get();
         when(pictureRepository.save(
-                argThat(ignoreUnPredictableAttributes(expectedFileItem.getPictureItem())))
-        ).thenReturn(expectedFileItem.getPictureItem());
+                argThat(ignoreUnPredictableAttributes(expectedFileItem.getPictureItem()))
+        )).thenReturn(expectedFileItem.getPictureItem());
 
         MockMultipartFile mockMultiPart = new MockMultipartFile(
                 "image",
@@ -117,6 +103,7 @@ public class FileControllerTest {
     }
 
     @Test
+    @SuppressWarnings("ConstantConditions")
     public void shouldProcessErrorWhileImageFileSaving() throws Exception {
 
         doThrow(new PictureFileProcessingException("error while saving"))
@@ -175,5 +162,48 @@ public class FileControllerTest {
 
         verify(pictureRepository, never()).findById(any());
         verify(storageService, never()).resolvePictureResource(any());
+    }
+
+    @Test
+    public void shouldRejectDeletionOfNonExistentPicture() throws Exception {
+        PictureFileItem item = fileItemSupplier.get();
+
+        mockMvc.perform(delete("/images/" + item.getPictureItem().getChecksum()))
+                .andDo(log())
+                .andExpect(status().isNotFound());
+
+        verify(pictureRepository).findById(eq(item.getPictureItem().getChecksum()));
+    }
+
+    @Test
+    public void shouldRemoveExistedPicture() throws Exception {
+        PictureFileItem item = fileItemSupplier.get();
+        when(pictureRepository.findById(item.getPictureItem().getChecksum()))
+                .thenReturn(Optional.of(item.getPictureItem()));
+
+        mockMvc.perform(delete("/images/" + item.getPictureItem().getChecksum()))
+                .andDo(log())
+                .andExpect(status().isNoContent());
+
+        verify(pictureRepository).findById(item.getPictureItem().getChecksum());
+        verify(storageService).deleteFile(item.getPictureItem());
+    }
+
+    @Test
+    public void shouldProcessErrorWhileImageDeleting() throws Exception {
+        PictureFileItem item = fileItemSupplier.get();
+
+        when(pictureRepository.findById(item.getPictureItem().getChecksum()))
+                .thenReturn(Optional.of(item.getPictureItem()));
+
+        doThrow(new PictureFileProcessingException("error while file deleting"))
+                .when(storageService).deleteFile(item.getPictureItem());
+
+        mockMvc.perform(delete("/images/" + item.getPictureItem().getChecksum()))
+                .andDo(log())
+                .andExpect(status().isInternalServerError());
+
+        verify(pictureRepository).findById(item.getPictureItem().getChecksum());
+        verify(storageService).deleteFile(item.getPictureItem());
     }
 }
