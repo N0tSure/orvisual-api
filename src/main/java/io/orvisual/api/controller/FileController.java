@@ -32,7 +32,7 @@ public class FileController {
     }
 
     @PostMapping
-    public ResponseEntity<Picture> saveImageFile(@RequestParam("image") PictureFileItem fileItem) {
+    public ResponseEntity<Picture> savePictureFile(@RequestParam("image") PictureFileItem fileItem) {
         Optional<Picture> optionalPicture = pictureRepository.findById(fileItem.getPictureItem().getChecksum());
         if (optionalPicture.isPresent()) {
             return ResponseEntity.ok(optionalPicture.get());
@@ -43,12 +43,28 @@ public class FileController {
     }
 
     @GetMapping("/{checksum}")
-    public ResponseEntity<?> findImageFile(@PathVariable("checksum") String checksum) {
+    public ResponseEntity<?> findPictureFile(@PathVariable String checksum) {
         Optional<Picture> optionalPicture = pictureRepository.findById(checksum);
         return optionalPicture.<ResponseEntity<?>>map(picture -> ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_TYPE, picture.getMimeType())
                 .body(storageService.resolvePictureResource(picture)))
                 .orElseGet(() -> ResponseEntity.notFound().build());
 
+    }
+
+    @DeleteMapping("/{checksum}")
+    public ResponseEntity<?> deletePictureFile(@PathVariable String checksum) {
+        Optional<Picture> optionalPicture = pictureRepository.findById(checksum);
+        ResponseEntity<?> response;
+        if (optionalPicture.isPresent()) {
+
+            storageService.deleteFile(optionalPicture.get());
+            pictureRepository.delete(optionalPicture.get());
+            response = ResponseEntity.noContent().build();
+        } else {
+            response = ResponseEntity.notFound().build();
+        }
+
+        return response;
     }
 }
