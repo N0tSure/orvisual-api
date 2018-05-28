@@ -50,9 +50,13 @@ dependencies {
     compile('org.springframework.boot:spring-boot-starter-web')
     compile('org.springframework.data:spring-data-rest-hal-browser')
     compile('com.google.guava:guava:25.0-jre')
+
     runtime('org.springframework.boot:spring-boot-devtools')
     runtime('com.h2database:h2')
+
     compileOnly('org.projectlombok:lombok')
+
     testCompile('org.springframework.boot:spring-boot-starter-test')
     testCompile('com.github.stefanbirkner:system-rules:1.16.1')
+    testCompileOnly('org.projectlombok:lombok')
 }
