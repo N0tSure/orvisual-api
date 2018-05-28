@@ -1,6 +1,7 @@
 package io.orvisual.api.controller;
 
 import io.orvisual.api.TestHelper;
+import io.orvisual.api.model.Picture;
 import io.orvisual.api.model.PictureFileItem;
 import io.orvisual.api.repository.PictureRepository;
 import io.orvisual.api.service.FileStorageService;
@@ -14,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -30,11 +32,11 @@ import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.log;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 /**
  * <p>
@@ -132,4 +134,46 @@ public class FileControllerTest {
         verify(pictureRepository, never()).save(any());
     }
 
+    @Test
+    public void shouldReturnExistedPicture() throws Exception {
+        PictureFileItem fileItem = fileItemSupplier.get();
+        when(pictureRepository.findById(fileItem.getPictureItem().getChecksum()))
+                .thenReturn(Optional.of(fileItem.getPictureItem()));
+
+        when(storageService.resolvePictureResource(fileItem.getPictureItem()))
+                .thenReturn(new ByteArrayResource(fileItem.getFileContent()));
+
+        mockMvc.perform(get("/images/" + fileItem.getPictureItem().getChecksum()))
+                .andDo(log())
+                .andExpect(status().isOk())
+                .andExpect(header().string("Content-Type", fileItem.getPictureItem().getMimeType()))
+                .andExpect(content().bytes(fileItem.getFileContent()));
+
+        verify(pictureRepository).findById(fileItem.getPictureItem().getChecksum());
+        verify(storageService).resolvePictureResource(fileItem.getPictureItem());
+        
+    }
+
+    @Test
+    public void shouldRejectRequestWithNotExistedPicture() throws Exception {
+        PictureFileItem fileItem = fileItemSupplier.get();
+
+        mockMvc.perform(get("/images/" + fileItem.getPictureItem().getChecksum()))
+                .andDo(log())
+                .andExpect(status().isNotFound());
+
+        verify(pictureRepository).findById(fileItem.getPictureItem().getChecksum());
+        verify(storageService, never()).resolvePictureResource(any());
+    }
+
+    @Test
+    public void shouldRejectNullAsPictureChecksum() throws Exception {
+
+        mockMvc.perform(get("/images"))
+                .andDo(log())
+                .andExpect(status().isNotFound());
+
+        verify(pictureRepository, never()).findById(any());
+        verify(storageService, never()).resolvePictureResource(any());
+    }
 }
