@@ -27,6 +27,8 @@ public class MultiPartFileToPictureFileItemConverterTest {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MultiPartFileToPictureFileItemConverterTest.class);
 
+    private final MultiPartFileToPictureFileItemConverter converter = new MultiPartFileToPictureFileItemConverter();
+
     @Test
     public void shouldConvertMultiPartCorrectly() throws Exception {
         final MultipartFile multipartFile = new MockMultipartFile(
@@ -54,8 +56,6 @@ public class MultiPartFileToPictureFileItemConverterTest {
                 new PictureFileItem(expectedPicture, new byte[]{'O', 'K', 'L', 'A', 'H', 'O', 'M', 'A'});
 
         LOGGER.info("Expected file item: {}", expectedFileItem);
-
-        MultiPartFileToPictureFileItemConverter converter = new MultiPartFileToPictureFileItemConverter();
 
         PictureFileItem actualFileItem = converter.convert(multipartFile);
         LOGGER.info("Actual picture file item: {}", actualFileItem);
@@ -88,12 +88,23 @@ public class MultiPartFileToPictureFileItemConverterTest {
     }
 
 
-    @Test
-    public void shouldProcessEmptyMultiPartFile() {
+    @Test(expected = MultiPartFileProcessingException.class)
+    public void shouldRejectEmptyMultiPartFile() {
         final MultipartFile multipartFile = new MockMultipartFile("image", new byte[]{});
+        converter.convert(multipartFile);
+    }
 
-        MultiPartFileToPictureFileItemConverter converter = new MultiPartFileToPictureFileItemConverter();
+    @Test(expected = MultiPartFileProcessingException.class)
+    public void shouldRejectMultiPartWithoutMimeType() {
+        final MultipartFile multipartFile =
+                new MockMultipartFile("image", null, null, new byte[]{});
+        converter.convert(multipartFile);
+    }
 
-        assertNull(converter.convert(multipartFile));
+    @Test(expected = MultiPartFileProcessingException.class)
+    public void shouldRejectMultiPartWithWrongType() {
+        final MultipartFile multipartFile =
+                new MockMultipartFile("image", "foo.txt", "text/plain", new byte[]{12});
+        converter.convert(multipartFile);
     }
 }
