@@ -51,33 +51,25 @@ public class MultiPartFileToPictureFileItemConverter implements Converter<Multip
      *
      * @param hint MIME content type from HTTP request
      * @return file extension associated with this MIME type
-     * @throws IllegalStateException in case of unsupported type was given
+     * @throws MultiPartFileProcessingException in case of unsupported type was given
      */
     private static String lookupFileExtension(final String hint) {
         return Optional
-                .ofNullable(MIME_TYPES_MAP.get(hint.toLowerCase()))
-                .orElseThrow(() -> new IllegalStateException("Unsupported media type: " + hint));
+                .ofNullable(MIME_TYPES_MAP.get(hint))
+                .orElseThrow(() -> new MultiPartFileProcessingException("Unsupported media type: " + hint));
     }
 
 
     @Override
     public PictureFileItem convert(final @NonNull MultipartFile source) {
-
-        PictureFileItem result = null;
         if (!source.isEmpty()) {
             try {
                 final byte[] multipartContent = source.getBytes();
                 final String checksum = Hashing.sha256().hashBytes(multipartContent).toString();
                 final String directoryName = checksum.substring(0, 4);
-                final String fileName = String.format(
-                        "%s.%s",
-                        checksum,
-                        lookupFileExtension(
-                                checkNotNull(source.getContentType(), "content type must not be null")
-                        )
-                );
+                final String fileName = checksum + '.' + lookupFileExtension(source.getContentType());
 
-                result = new PictureFileItem(
+                return new PictureFileItem(
                         new Picture(checksum, fileName, source.getContentType(), directoryName, Instant.now()),
                         multipartContent
                 );
@@ -87,6 +79,6 @@ public class MultiPartFileToPictureFileItemConverter implements Converter<Multip
             }
         }
 
-        return result;
+        throw new MultiPartFileProcessingException("Uploaded multipart has no content.");
     }
 }
