@@ -21,11 +21,10 @@ import org.springframework.web.context.WebApplicationContext;
 import java.util.function.Supplier;
 
 import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.endsWith;
 import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.log;
