@@ -1,7 +1,7 @@
 package io.orvisual.api.repository;
 
 import io.orvisual.api.model.OrderSummary;
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.PagingAndSortingRepository;
 
 /**
  * Created on 10 May, 2018.
@@ -10,5 +10,5 @@ import org.springframework.data.repository.CrudRepository;
  *
  * @author Artemis A. Sirosh
  */
-public interface OrderSummaryRepository extends CrudRepository<OrderSummary, Long> {
+public interface OrderSummaryRepository extends PagingAndSortingRepository<OrderSummary, Long> {
 }
