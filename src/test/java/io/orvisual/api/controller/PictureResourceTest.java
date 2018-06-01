@@ -132,4 +132,19 @@ public class PictureResourceTest {
         verify(storageService).deleteFile(fixturePicture);
 
     }
+
+    @Test
+    public void shouldIncludeLinkToImageFile() throws Exception {
+        Picture fixturePicture = pictureRepository.save(itemSupplier.get().getPictureItem());
+        assertTrue("sanity check failed", pictureRepository.existsById(fixturePicture.getChecksum()));
+
+        mockMvc.perform(get("/pictures/{checksum}", fixturePicture.getChecksum()))
+                .andDo(log())
+                .andExpect(
+                        jsonPath(
+                                "$._links.imageFile.href",
+                                endsWith("images/" + fixturePicture.getChecksum())
+                        )
+                );
+    }
 }
