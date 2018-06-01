@@ -6,28 +6,18 @@ import io.orvisual.api.model.PictureFileItem;
 import io.orvisual.api.repository.PictureRepository;
 import io.orvisual.api.service.FileStorageService;
 import io.orvisual.api.service.PictureFileProcessingException;
-import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
 import java.util.function.Supplier;
 
 import static org.hamcrest.Matchers.*;
@@ -46,6 +36,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * <p>
  * Created on 31.05.2018.
  * </p>
+ *
+ * Test for customization Spring Data Rest resource {@link Picture}
  *
  * @author Artemis A. Sirosh
  */

@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 /**
  * Created on 31 May, 2018.
  *
+ * This controller customize {@literal DELETE} operation of Rest resource {@link Picture}
+ *
  * @author Artemis A. Sirosh
  */
 @RepositoryRestController

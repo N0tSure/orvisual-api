@@ -164,46 +164,4 @@ public class FileControllerTest {
         verify(storageService, never()).resolvePictureResource(any());
     }
 
-    @Test
-    public void shouldRejectDeletionOfNonExistentPicture() throws Exception {
-        PictureFileItem item = fileItemSupplier.get();
-
-        mockMvc.perform(delete("/images/" + item.getPictureItem().getChecksum()))
-                .andDo(log())
-                .andExpect(status().isNotFound());
-
-        verify(pictureRepository).findById(eq(item.getPictureItem().getChecksum()));
-    }
-
-    @Test
-    public void shouldRemoveExistedPicture() throws Exception {
-        PictureFileItem item = fileItemSupplier.get();
-        when(pictureRepository.findById(item.getPictureItem().getChecksum()))
-                .thenReturn(Optional.of(item.getPictureItem()));
-
-        mockMvc.perform(delete("/images/" + item.getPictureItem().getChecksum()))
-                .andDo(log())
-                .andExpect(status().isNoContent());
-
-        verify(pictureRepository).findById(item.getPictureItem().getChecksum());
-        verify(storageService).deleteFile(item.getPictureItem());
-    }
-
-    @Test
-    public void shouldProcessErrorWhileImageDeleting() throws Exception {
-        PictureFileItem item = fileItemSupplier.get();
-
-        when(pictureRepository.findById(item.getPictureItem().getChecksum()))
-                .thenReturn(Optional.of(item.getPictureItem()));
-
-        doThrow(new PictureFileProcessingException("error while file deleting"))
-                .when(storageService).deleteFile(item.getPictureItem());
-
-        mockMvc.perform(delete("/images/" + item.getPictureItem().getChecksum()))
-                .andDo(log())
-                .andExpect(status().isInternalServerError());
-
-        verify(pictureRepository).findById(item.getPictureItem().getChecksum());
-        verify(storageService).deleteFile(item.getPictureItem());
-    }
 }

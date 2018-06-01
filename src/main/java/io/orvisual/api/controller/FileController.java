@@ -55,19 +55,4 @@ public class FileController {
 
     }
 
-    @DeleteMapping("/{checksum}")
-    public ResponseEntity<?> deletePictureFile(@PathVariable String checksum) {
-        Optional<Picture> optionalPicture = pictureRepository.findById(checksum);
-        ResponseEntity<?> response;
-        if (optionalPicture.isPresent()) {
-
-            pictureRepository.delete(optionalPicture.get());
-            storageService.deleteFile(optionalPicture.get());
-            response = ResponseEntity.noContent().build();
-        } else {
-            response = ResponseEntity.notFound().build();
-        }
-
-        return response;
-    }
 }
