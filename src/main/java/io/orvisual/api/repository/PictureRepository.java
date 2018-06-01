@@ -1,7 +1,7 @@
 package io.orvisual.api.repository;
 
 import io.orvisual.api.model.Picture;
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.data.rest.core.annotation.RestResource;
 import org.springframework.lang.NonNull;
@@ -16,7 +16,7 @@ import java.util.Optional;
  * @author Artemis A. Sirosh
  */
 @RepositoryRestResource
-public interface PictureRepository extends CrudRepository<Picture, String> {
+public interface PictureRepository extends PagingAndSortingRepository<Picture, String> {
 
     @RestResource(exported = false)
     @NonNull
