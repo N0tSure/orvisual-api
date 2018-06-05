@@ -9,10 +9,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Spliterator;
-import java.util.Spliterators;
-import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 
 /**
  * <p>
@@ -21,12 +17,12 @@ import java.util.stream.StreamSupport;
  *
  * @author Artemis A. Sirosh
  */
-public class OrderSummaryDeserializer extends JsonDeserializer<OrderSummary> {
+public class OrderSummaryDeserializer extends JsonDeserializer<Order> {
 
     @Override
-    public OrderSummary deserialize(JsonParser p, DeserializationContext ctxt) throws IOException, JsonProcessingException {
+    public Order deserialize(JsonParser p, DeserializationContext ctxt) throws IOException, JsonProcessingException {
         JsonNode rootNode = p.getCodec().readTree(p);
-        OrderSummary result = new OrderSummary();
+        Order result = new Order();
 
         result.setClientName(rootNode.get("clientName").asText());
         result.setClientPhone(rootNode.get("clientPhone").asText());

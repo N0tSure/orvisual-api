@@ -10,18 +10,19 @@ import java.util.List;
 /**
  * Created on 10 May, 2018.
  *
- * This model describe order details, such as client's name, phone and email. {@link OrderSummary} contains short
+ * This model describe order details, such as client's name, phone and email. {@link Order} contains short
  * description of order, written by client and images uploaded by client. Also model provides order metadata, datetime
  * order's accepting and completion: {@link #acceptedAt} and {@link #completedAt} respectively.
  *
  * @author Artemis A. Sirosh
  */
 @Entity
+@Table(name = "ORDER_SUMMARY")
 @Data
 @NoArgsConstructor
-public class OrderSummary {
+public class Order {
 
-    public OrderSummary(
+    public Order(
             String clientName,
             String clientPhone,
             String clientEmail,

@@ -28,9 +28,9 @@ import static org.junit.Assert.assertThat;
  *
  * @author Artemis A. Sirosh
  */
-public class OrderSummaryDeserializerTest {
+public class OrderDeserializerTest {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(OrderSummaryDeserializerTest.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(OrderDeserializerTest.class);
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -40,7 +40,7 @@ public class OrderSummaryDeserializerTest {
             @Override
             public void setupModule(SetupContext context) {
                 SimpleDeserializers deserializers = new SimpleDeserializers();
-                deserializers.addDeserializer(OrderSummary.class, new OrderSummaryDeserializer());
+                deserializers.addDeserializer(Order.class, new OrderSummaryDeserializer());
                 context.addDeserializers(deserializers);
             }
         };
@@ -54,10 +54,10 @@ public class OrderSummaryDeserializerTest {
                 "\"clientPhone\":\"+798005553535\", " +
                 "\"clientEmail\":\"example@email.com\" }";
 
-        LOGGER.info("Example OrderSummary JSON: {}", orderSummaryString);
+        LOGGER.info("Example Order JSON: {}", orderSummaryString);
 
-        OrderSummary order = objectMapper.readValue(orderSummaryString, OrderSummary.class);
-        LOGGER.info("OrderSummary instance: {}", order);
+        Order order = objectMapper.readValue(orderSummaryString, Order.class);
+        LOGGER.info("Order instance: {}", order);
 
         assertThat(order.getClientName(), equalTo("Foo Bar Quux"));
         assertThat(order.getClientPhone(), equalTo("+798005553535"));
@@ -72,12 +72,12 @@ public class OrderSummaryDeserializerTest {
                 "\"clientEmail\":\"example@email.com\", " +
                 "\"description\": \"проще позвонить чем у кого-то занимать\" }";
 
-        LOGGER.info("Example OrderSummary JSON: {}", orderSummaryString);
+        LOGGER.info("Example Order JSON: {}", orderSummaryString);
 
-        OrderSummary actualOrderSummary = objectMapper.readValue(orderSummaryString, OrderSummary.class);
-        LOGGER.info("Described instance: {}", actualOrderSummary);
+        Order actualOrder = objectMapper.readValue(orderSummaryString, Order.class);
+        LOGGER.info("Described instance: {}", actualOrder);
 
-        assertThat(actualOrderSummary.getDescription(), equalTo("проще позвонить чем у кого-то занимать"));
+        assertThat(actualOrder.getDescription(), equalTo("проще позвонить чем у кого-то занимать"));
     }
 
     @Test
@@ -88,12 +88,12 @@ public class OrderSummaryDeserializerTest {
                 "\"description\": \"проще позвонить чем у кого-то занимать\", " +
                 "\"pictures\": [ 4, 8, 15, 16, 23, 42 ] }";
 
-        LOGGER.info("Example OrderSummary JSON: {}", orderSummaryString);
+        LOGGER.info("Example Order JSON: {}", orderSummaryString);
 
-        OrderSummary actualOrderSummary = objectMapper.readValue(orderSummaryString, OrderSummary.class);
-        LOGGER.info("OrderSummary & Pictures: {}", actualOrderSummary);
+        Order actualOrder = objectMapper.readValue(orderSummaryString, Order.class);
+        LOGGER.info("Order & Pictures: {}", actualOrder);
 
-        assertThat(actualOrderSummary.getPictures(), equalByPictureId(4, 8, 15, 16, 23, 42));
+        assertThat(actualOrder.getPictures(), equalByPictureId(4, 8, 15, 16, 23, 42));
     }
 
     @SuppressWarnings("unchecked")
