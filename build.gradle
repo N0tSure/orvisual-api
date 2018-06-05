@@ -15,33 +15,12 @@ apply plugin: 'org.springframework.boot'
 apply plugin: 'io.spring.dependency-management'
 
 group = 'io.orvisual'
-version = '0.0.1-SNAPSHOT'
+version = '0.1.0-SNAPSHOT'
 sourceCompatibility = 8
 
 repositories {
     mavenCentral()
 }
-
-//compileJava {
-//    options.compilerArgs += ["--add-modules", "java.xml.bind"]
-//}
-//
-//compileTestJava {
-//    options.compilerArgs += ["--add-modules", "java.xml.bind"]
-//}
-
-/**
- * java.xml.bind issue with JDK9 <a href="https://stackoverflow.com/a/43574427">see for details.</a>
- * <code>
- *     Caused by: java.lang.ClassNotFoundException: javax.xml.bind.JAXBException
- * </code>
- */
-test {
-    if (JavaVersion.current() == JavaVersion.VERSION_1_9) {
-        jvmArgs += ['--add-modules',  'java.xml.bind']
-    }
-}
-
 
 dependencies {
     compile('org.springframework.boot:spring-boot-starter-data-jpa')
@@ -58,5 +37,6 @@ dependencies {
 
     testCompile('org.springframework.boot:spring-boot-starter-test')
     testCompile('com.github.stefanbirkner:system-rules:1.16.1')
+
     testCompileOnly('org.projectlombok:lombok')
 }
