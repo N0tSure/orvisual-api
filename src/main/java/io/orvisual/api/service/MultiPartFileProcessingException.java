@@ -6,12 +6,16 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 /**
  * Created on 29 May, 2018.
  *
+ * This exception will be thrown, when {@link org.springframework.web.multipart.MultipartFile MultipartFile}
+ * object, passed in to {@link MultiPartFileToPictureFileItemConverter} with incompatible content. For
+ * example, with unknown content type, without content etc.
+ *
  * @author Artemis A. Sirosh
  */
 @ResponseStatus(value = HttpStatus.BAD_REQUEST, reason = "unable to process uploaded multipart")
-public class MultiPartFileProcessingException extends IllegalArgumentException {
+class MultiPartFileProcessingException extends IllegalArgumentException {
 
-    public MultiPartFileProcessingException(String s) {
+    MultiPartFileProcessingException(String s) {
         super(s);
     }
 

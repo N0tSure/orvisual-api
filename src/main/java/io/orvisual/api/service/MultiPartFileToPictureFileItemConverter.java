@@ -15,8 +15,6 @@ import java.time.Instant;
 import java.util.Map;
 import java.util.Optional;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 /**
  * <p>
  * Created on 20.05.2018.

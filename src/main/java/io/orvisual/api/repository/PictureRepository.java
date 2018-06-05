@@ -6,8 +6,6 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.data.rest.core.annotation.RestResource;
 import org.springframework.lang.NonNull;
 
-import java.util.Optional;
-
 /**
  * Created on 10 May, 2018.
  *

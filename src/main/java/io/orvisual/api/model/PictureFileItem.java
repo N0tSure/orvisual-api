@@ -1,7 +1,6 @@
 package io.orvisual.api.model;
 
 import lombok.AllArgsConstructor;
-import lombok.Data;
 import lombok.Value;
 
 /**

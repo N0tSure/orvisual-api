@@ -2,7 +2,6 @@ package io.orvisual.api.service;
 
 import io.orvisual.api.model.Picture;
 import io.orvisual.api.model.PictureFileItem;
-import io.orvisual.api.repository.PictureRepository;
 import lombok.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
