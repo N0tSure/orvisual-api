@@ -60,7 +60,7 @@ public final class TestHelper {
      *
      * @return {@link PictureFileItem} which never be {@code null}
      */
-    public static Supplier<PictureFileItem> pictureSupplier() {
+    public static Supplier<PictureFileItem> uniformPictureItemSupplier() {
         final HashFunction sha256Function = Hashing.sha256();
         return () -> new PictureFileItem(
                 new Picture(
@@ -71,5 +71,21 @@ public final class TestHelper {
                         Instant.EPOCH
                 ), OKLAHOMA_BYTES
         );
+    }
+
+    public static Supplier<Picture> randomPictureSupplier() {
+        final HashFunction sha256Function = Hashing.sha256();
+        return () -> {
+            String hash = sha256Function.hashBytes(
+                    String.valueOf(Math.round(Math.random() * Long.MAX_VALUE)).getBytes()
+            ).toString();
+            return new Picture(
+                    hash,
+                    hash + ".jpg",
+                    MediaType.IMAGE_JPEG_VALUE,
+                    hash.substring(0, 4),
+                    Instant.now()
+            );
+        };
     }
 }

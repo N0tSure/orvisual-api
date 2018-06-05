@@ -39,7 +39,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @RunWith(SpringRunner.class)
 public class FileControllerTest {
 
-    private final Supplier<PictureFileItem> fileItemSupplier = TestHelper.pictureSupplier();
+    private final Supplier<PictureFileItem> fileItemSupplier = TestHelper.uniformPictureItemSupplier();
 
     @MockBean
     private FileStorageService storageService;

@@ -54,7 +54,7 @@ public class PictureResourceTest {
     private WebApplicationContext webApplicationContext;
 
     private MockMvc mockMvc;
-    private final Supplier<PictureFileItem> itemSupplier = TestHelper.pictureSupplier();
+    private final Supplier<PictureFileItem> itemSupplier = TestHelper.uniformPictureItemSupplier();
 
     @Before
     public void setUpMockMvc() {

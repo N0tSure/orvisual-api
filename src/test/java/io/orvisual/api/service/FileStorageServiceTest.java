@@ -1,17 +1,14 @@
 package io.orvisual.api.service;
 
-import com.google.common.hash.HashFunction;
 import com.google.common.hash.Hashing;
 import io.orvisual.api.TestHelper;
 import io.orvisual.api.model.Picture;
 import io.orvisual.api.model.PictureFileItem;
-import io.orvisual.api.repository.PictureRepository;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,7 +44,7 @@ public class FileStorageServiceTest {
     private Path rootPath;
 
     private FileStorageService storageService;
-    private final Supplier<PictureFileItem> fileItemSupplier = TestHelper.pictureSupplier();
+    private final Supplier<PictureFileItem> fileItemSupplier = TestHelper.uniformPictureItemSupplier();
 
     @Before
     public void setUp() throws Exception {
