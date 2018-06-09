@@ -142,7 +142,7 @@ public class PictureResourceTest {
                 .andExpect(
                         jsonPath(
                                 "$._links.imageFile.href",
-                                endsWith("images/" + fixturePicture.getChecksum())
+                                endsWith("files/" + fixturePicture.getChecksum())
                         )
                 );
     }

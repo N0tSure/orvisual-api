@@ -18,12 +18,12 @@ import java.util.Optional;
  * </p>
  *
  * Operates with {@link Picture} metadata object and image files. Supported operations:
- * {@code POST} for {@code /images}, and {@code GET and POST} for {@code /images/{checksum}}.
+ * {@code POST} for {@code /files}, and {@code GET and POST} for {@code /files/{checksum}}.
  *
  * @author Artemis A. Sirosh
  */
 @Controller
-@RequestMapping("/images")
+@RequestMapping("/files")
 public class FileController {
 
     private final FileStorageService storageService;

@@ -62,7 +62,7 @@ public class FileControllerTest {
                 expectedFileItem.getFileContent()
         );
 
-        mockMvc.perform(multipart("/images").file(mockMultiPart))
+        mockMvc.perform(multipart("/files").file(mockMultiPart))
                 .andDo(log())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.checksum", equalTo(expectedFileItem.getPictureItem().getChecksum())))
@@ -87,7 +87,7 @@ public class FileControllerTest {
                 expectedFileItem.getFileContent()
         );
 
-        mockMvc.perform(multipart("/images").file(mockMultiPart))
+        mockMvc.perform(multipart("/files").file(mockMultiPart))
                 .andDo(log())
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.checksum", equalTo(expectedFileItem.getPictureItem().getChecksum())))
@@ -110,7 +110,7 @@ public class FileControllerTest {
         MockMultipartFile multipartFile = new MockMultipartFile(
                 "image", "foo.jpg", MediaType.IMAGE_JPEG_VALUE, new byte[]{2, 42});
 
-        mockMvc.perform(multipart("/images").file(multipartFile))
+        mockMvc.perform(multipart("/files").file(multipartFile))
                 .andDo(log())
                 .andExpect(status().isInternalServerError());
 
@@ -128,7 +128,7 @@ public class FileControllerTest {
         when(storageService.resolvePictureResource(fileItem.getPictureItem()))
                 .thenReturn(new ByteArrayResource(fileItem.getFileContent()));
 
-        mockMvc.perform(get("/images/" + fileItem.getPictureItem().getChecksum()))
+        mockMvc.perform(get("/files/" + fileItem.getPictureItem().getChecksum()))
                 .andDo(log())
                 .andExpect(status().isOk())
                 .andExpect(header().string("Content-Type", fileItem.getPictureItem().getMimeType()))
@@ -143,7 +143,7 @@ public class FileControllerTest {
     public void shouldRejectRequestWithNotExistedPicture() throws Exception {
         PictureFileItem fileItem = fileItemSupplier.get();
 
-        mockMvc.perform(get("/images/" + fileItem.getPictureItem().getChecksum()))
+        mockMvc.perform(get("/files/" + fileItem.getPictureItem().getChecksum()))
                 .andDo(log())
                 .andExpect(status().isNotFound());
 
@@ -154,7 +154,7 @@ public class FileControllerTest {
     @Test
     public void shouldRejectNullAsPictureChecksum() throws Exception {
 
-        mockMvc.perform(get("/images"))
+        mockMvc.perform(get("/files"))
                 .andDo(log())
                 .andExpect(status().isMethodNotAllowed());
 
