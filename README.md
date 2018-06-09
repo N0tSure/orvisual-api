@@ -73,3 +73,71 @@ validating client-submitted data. To retrieve JSON Schema you invoke them with A
 GET http://localhost:8080/profile/pictures
 Accept: application/schema+json
 ```
+
+### Rest resources
+
+#### Picture resource
+
+Picture resource provides metadata for uploaded file, supply `GET`, `DELETE` methods. All `GET` operations returns
+`200` status code on success. When *delete* operation completes successfully, `204` (*No content*) status will
+returned.
+
+Picture resource contains link to picture file by path `$._links.imageFile.href`.
+
+Delete operation except that removes `Picture` record, also removes picture file from physical storage.
+
+#### Order resource
+
+Will be written as soon as, code will written.
+
+### File resource
+
+This resource has non HATEOAS syntax. Allows exchange image files between service and client. Supported operations:
+
+| Resource mapping | HTTP Method | Status | Response type | Description |
+| :--------------- | :---------- | :----- | :---------- | :---- |
+| `/files`         | `POST`      | Created (`201`) | `Picture` metadata object | Saves image and metadata object |
+| `/files/{checksum}` | `GET` | OK (`200`) | image binary data | Find picture by checksum |
+
+#### Upload file
+
+Files should uploaded as `multipart/form-data`, file data should attached to part with name `image`. File's MIME type
+should present in part header. Example:
+
+```
+POST http://localhost:8080/files
+Content-Type: multipart/form-data; boundary=Asrf456BGe4h
+
+
+--Asrf456BGe4h
+Content-Disposition: form-data; name="image"; filename="foo.jpg"
+Content-Type: image/jpeg
+
+[image file binary data]
+--Asrf456BGe4h--
+```
+
+Constraints for uploaded files:
+
+ * files with MIME type out of this types: `image/jpeg`, `image/png`, `image/gif`, `image/bmp`, will be rejected
+ * files, which size greater than **10Mb** will be rejected
+ * files with no content will be rejected too
+
+#### Load file
+
+File may be requested for service by file's **SHA-256** checksum, for example:
+
+```
+GET http://localhost:8080/files/97df3588b5a3f24babc3851b372f0ba71a9dcdded43b14b9d06961bfc1707d9d
+
+HTTP/1.1 200
+Accept-Ranges: bytes
+Content-Type: image/jpeg
+Content-Length: 9
+Date: Sat, 09 Jun 2018 16:59:02 GMT
+
+[image file binary data]
+```
+
+If file with given checksum exists it will returned, in headers may be found `Content-Type` header, which represents
+image's type.
