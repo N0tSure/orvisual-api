@@ -4,9 +4,14 @@ pipelines:
   branches:
     master:
       - step:
+          name: Run tests
           caches:
             - gradle
           script:
+            - bash ./gradlew test
+
+      - step:
+          name: Build and deploy artifact
+          deployment: test
+          script:
             - bash ./gradlew build
-          artifacts:
-            - dist/**
