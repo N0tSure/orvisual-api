@@ -8,3 +8,5 @@ pipelines:
             - gradle
           script:
             - bash ./gradlew build
+          artifacts:
+            - dist/**
