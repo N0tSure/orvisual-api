@@ -15,4 +15,4 @@ pipelines:
           deployment: test
           script:
             - bash ./gradlew build
-            - ls -l .
+            - ls -l build/libs
