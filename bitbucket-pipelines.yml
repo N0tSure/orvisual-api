@@ -14,5 +14,5 @@ pipelines:
           name: Build and deploy artifact
           deployment: test
           script:
-            - bash ./gradlew build
-            - ls -l build/libs
+            - bash ./gradlew bootJar
+            - curl -X POST --user "${BB_AUTH_STRING}" "https://api.bitbucket.org/2.0/repositories/${BITBUCKET_REPO_OWNER}/${BITBUCKET_REPO_SLUG}/downloads" --form files=@"$(ls build/libs/orvisual-api-*.jar)"
