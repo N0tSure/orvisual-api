@@ -16,7 +16,7 @@ apply plugin: 'io.spring.dependency-management'
 
 group = 'io.orvisual'
 archivesBaseName = 'orvisual-api'
-version = '0.1.0'
+version = '0.1.1-SNAPSHOT'
 sourceCompatibility = 8
 
 repositories {
