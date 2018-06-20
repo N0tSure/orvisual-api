@@ -4,15 +4,16 @@ pipelines:
   branches:
     master:
       - step:
+          name: Build and deploy artifact
+          deployment: test
+          script:
+            - bash ./gradlew --no-daemon bootJar
+            - curl -i -X POST --user "${BB_AUTH_STRING}" "https://api.bitbucket.org/2.0/repositories/${BITBUCKET_REPO_OWNER}/${BITBUCKET_REPO_SLUG}/downloads" --form files=@"$(ls build/libs/orvisual-api-*.jar)"
+
+    develop:
+      - step:
           name: Run tests
           caches:
             - gradle
           script:
-            - bash ./gradlew test
-
-      - step:
-          name: Build and deploy artifact
-          deployment: test
-          script:
-            - bash ./gradlew bootJar
-            - curl -i -X POST --user "${BB_AUTH_STRING}" "https://api.bitbucket.org/2.0/repositories/${BITBUCKET_REPO_OWNER}/${BITBUCKET_REPO_SLUG}/downloads" --form files=@"$(ls build/libs/orvisual-api-*.jar)"
+            - bash ./gradlew --no-daemon test
