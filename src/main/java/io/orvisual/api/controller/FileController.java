@@ -4,6 +4,11 @@ import io.orvisual.api.model.Picture;
 import io.orvisual.api.model.PictureFileItem;
 import io.orvisual.api.repository.PictureRepository;
 import io.orvisual.api.service.FileStorageService;
+import org.springframework.data.rest.webmvc.support.RepositoryEntityLinks;
+import org.springframework.hateoas.Link;
+import org.springframework.hateoas.Resource;
+import org.springframework.hateoas.ResourceSupport;
+import org.springframework.hateoas.mvc.ControllerLinkBuilder;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,20 +33,26 @@ public class FileController {
 
     private final FileStorageService storageService;
     private final PictureRepository pictureRepository;
+    private final RepositoryEntityLinks entityLinks;
 
-    public FileController(FileStorageService storageService, PictureRepository pictureRepository) {
+    public FileController(
+            FileStorageService storageService, PictureRepository pictureRepository, RepositoryEntityLinks entityLinks
+    ) {
         this.storageService = storageService;
         this.pictureRepository = pictureRepository;
+        this.entityLinks = entityLinks;
     }
 
+
     @PostMapping
-    public ResponseEntity<Picture> savePictureFile(@RequestParam("image") PictureFileItem fileItem) {
+    public ResponseEntity<Resource<Picture>> savePictureFile(@RequestParam("image") PictureFileItem fileItem) {
         Optional<Picture> optionalPicture = pictureRepository.findById(fileItem.getPictureItem().getChecksum());
         if (optionalPicture.isPresent()) {
-            return ResponseEntity.ok(optionalPicture.get());
+            return ResponseEntity.ok(createResource(optionalPicture.get()));
         } else {
             storageService.savePictureFileItem(fileItem);
-            return ResponseEntity.status(HttpStatus.CREATED).body(pictureRepository.save(fileItem.getPictureItem()));
+            return ResponseEntity.status(HttpStatus.CREATED)
+                    .body(createResource(pictureRepository.save(fileItem.getPictureItem())));
         }
     }
 
@@ -53,6 +64,17 @@ public class FileController {
                 .body(storageService.resolvePictureResource(picture)))
                 .orElseGet(() -> ResponseEntity.notFound().build());
 
+    }
+
+    private Resource<Picture> createResource(Picture picture) {
+        Link pictureLink = entityLinks.linkFor(Picture.class).slash(picture.getChecksum()).withRel("picture");
+        Link selfLink = entityLinks.linkFor(Picture.class).slash(picture.getChecksum()).withSelfRel();
+        Link imageFileLink = ControllerLinkBuilder
+                .linkTo(FileController.class)
+                .slash(picture.getChecksum())
+                .withRel("imageFile");
+
+        return new Resource<>(picture, selfLink, pictureLink, imageFileLink);
     }
 
 }

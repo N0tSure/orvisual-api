@@ -5,22 +5,27 @@ import io.orvisual.api.model.PictureFileItem;
 import io.orvisual.api.repository.PictureRepository;
 import io.orvisual.api.service.FileStorageService;
 import io.orvisual.api.service.PictureFileProcessingException;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.context.WebApplicationContext;
 
 import java.util.Optional;
 import java.util.function.Supplier;
 
 import static io.orvisual.api.TestHelper.ignoreUnPredictableAttributes;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.endsWith;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.log;
@@ -33,7 +38,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  *
  * @author Artemis A. Sirosh
  */
-@WebMvcTest
+@SpringBootTest
 @RunWith(SpringRunner.class)
 public class FileControllerTest {
 
@@ -46,7 +51,14 @@ public class FileControllerTest {
     private PictureRepository pictureRepository;
 
     @Autowired
+    private WebApplicationContext applicationContext;
+
     private MockMvc mockMvc;
+
+    @Before
+    public void setUp() {
+        this.mockMvc = MockMvcBuilders.webAppContextSetup(applicationContext).alwaysDo(log()).build();
+    }
 
     @Test
     public void shouldReturnAlreadyExisted() throws Exception {
@@ -62,11 +74,19 @@ public class FileControllerTest {
                 expectedFileItem.getFileContent()
         );
 
+        // TODO: 26.06.2018 Search for questions on Stackoverflow: org.springframework.data.rest.core.mapping.PersistentEntitiesResourceMappings
         mockMvc.perform(multipart("/files").file(mockMultiPart))
-                .andDo(log())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.checksum", equalTo(expectedFileItem.getPictureItem().getChecksum())))
-                .andExpect(jsonPath("$.mimeType", equalTo(expectedFileItem.getPictureItem().getMimeType())));
+                .andExpect(jsonPath("$.fileName", equalTo(expectedFileItem.getPictureItem().getFileName())))
+                .andExpect(jsonPath("$.directory", equalTo(expectedFileItem.getPictureItem().getDirectory())))
+                .andExpect(jsonPath("$.mimeType", equalTo(expectedFileItem.getPictureItem().getMimeType())))
+                .andExpect(jsonPath(
+                        "$._links.self.href", endsWith(expectedFileItem.getPictureItem().getChecksum())
+                )).andExpect(jsonPath(
+                        "$._links.picture.href", endsWith(expectedFileItem.getPictureItem().getChecksum())
+                )).andExpect(jsonPath(
+                        "$._links.imageFile.href", endsWith(expectedFileItem.getPictureItem().getChecksum())
+        ));
 
         verify(pictureRepository).findById(expectedFileItem.getPictureItem().getChecksum());
         verify(storageService, never()).savePictureFileItem(any());
@@ -90,8 +110,17 @@ public class FileControllerTest {
         mockMvc.perform(multipart("/files").file(mockMultiPart))
                 .andDo(log())
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.checksum", equalTo(expectedFileItem.getPictureItem().getChecksum())))
-                .andExpect(jsonPath("$.mimeType", equalTo(expectedFileItem.getPictureItem().getMimeType())));
+                .andExpect(jsonPath("$.fileName", equalTo(expectedFileItem.getPictureItem().getFileName())))
+                .andExpect(jsonPath("$.directory", equalTo(expectedFileItem.getPictureItem().getDirectory())))
+                .andExpect(jsonPath("$.mimeType", equalTo(expectedFileItem.getPictureItem().getMimeType())))
+                .andExpect(jsonPath(
+                        "$._links.self.href", endsWith(expectedFileItem.getPictureItem().getChecksum()))
+                ).andExpect(jsonPath(
+                        "$._links.picture.href", endsWith(expectedFileItem.getPictureItem().getChecksum()))
+                ).andExpect(jsonPath(
+                        "$._links.imageFile.href", endsWith(expectedFileItem.getPictureItem().getChecksum())
+                )
+        );
 
         verify(pictureRepository).findById(eq(expectedFileItem.getPictureItem().getChecksum()));
         verify(storageService).savePictureFileItem(argThat(ignoreUnPredictableAttributes(expectedFileItem)));
