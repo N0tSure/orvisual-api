@@ -6,7 +6,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
-## [0.1.0] - 2018-06-
+## [0.2.0] - 2018-07-02
+### Changed
+ - When image multipart was uploaded, it returns Picture as HATEOAS *resource* 
+
+## [0.1.0] - 2018-06-20
 ### Added
  - Implemented domain model
  - File management components created
