@@ -9,7 +9,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.core.io.ByteArrayResource;
@@ -74,7 +73,6 @@ public class FileControllerTest {
                 expectedFileItem.getFileContent()
         );
 
-        // TODO: 26.06.2018 Search for questions on Stackoverflow: org.springframework.data.rest.core.mapping.PersistentEntitiesResourceMappings
         mockMvc.perform(multipart("/files").file(mockMultiPart))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.fileName", equalTo(expectedFileItem.getPictureItem().getFileName())))

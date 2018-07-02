@@ -7,7 +7,6 @@ import io.orvisual.api.service.FileStorageService;
 import org.springframework.data.rest.webmvc.support.RepositoryEntityLinks;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.Resource;
-import org.springframework.hateoas.ResourceSupport;
 import org.springframework.hateoas.mvc.ControllerLinkBuilder;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -66,6 +65,12 @@ public class FileController {
 
     }
 
+    /**
+     * Creates REST resource from {@link Picture} metadata instance.
+     *
+     * @param picture metadata object instance
+     * @return picture {@link Resource}
+     */
     private Resource<Picture> createResource(Picture picture) {
         Link pictureLink = entityLinks.linkFor(Picture.class).slash(picture.getChecksum()).withRel("picture");
         Link selfLink = entityLinks.linkFor(Picture.class).slash(picture.getChecksum()).withSelfRel();
