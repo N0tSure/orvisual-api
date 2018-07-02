@@ -122,6 +122,28 @@ Constraints for uploaded files:
  * files with MIME type out of this types: `image/jpeg`, `image/png`, `image/gif`, `image/bmp`, will be rejected
  * files, which size greater than **10Mb** will be rejected
  * files with no content will be rejected too
+ 
+Response from server will be in form of **HATEOAS** Picture REST resource:
+
+```json
+{
+  "fileName" : "54ebb28eac3bca48cedfee0efd180c6d7264249de4e77fc389cf6008db87babb.jpg",
+  "mimeType" : "image/jpeg",
+  "directory" : "54eb",
+  "loadedAt" : "2018-07-02T13:45:52.378Z",
+  "_links" : {
+    "self" : {
+      "href" : "http://localhost:8080/pictures/54ebb28eac3bca48cedfee0efd180c6d7264249de4e77fc389cf6008db87babb"
+    },
+    "picture" : {
+      "href" : "http://localhost:8080/pictures/54ebb28eac3bca48cedfee0efd180c6d7264249de4e77fc389cf6008db87babb"
+    },
+    "imageFile" : {
+      "href" : "http://localhost:8080/files/54ebb28eac3bca48cedfee0efd180c6d7264249de4e77fc389cf6008db87babb"
+    }
+  }
+}
+``` 
 
 #### Load file
 
