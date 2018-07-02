@@ -5,6 +5,8 @@ pipelines:
     master:
       - step:
           name: Build and deploy artifact
+          caches:
+            - gradle
           deployment: test
           script:
             - bash ./gradlew --no-daemon bootJar
