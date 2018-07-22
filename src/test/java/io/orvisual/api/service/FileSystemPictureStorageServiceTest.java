@@ -32,9 +32,9 @@ import static org.junit.Assert.*;
  * @author Artemis A. Sirosh
  */
 @RunWith(MockitoJUnitRunner.class)
-public class FileStorageServiceTest {
+public class FileSystemPictureStorageServiceTest {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(FileStorageServiceTest.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(FileSystemPictureStorageServiceTest.class);
 
     private static final byte[] OKLAHOMA_BYTES = new byte[]{'O', 'K', 'L', 'A', 'H', 'O', 'M', 'A'};
     
@@ -43,13 +43,13 @@ public class FileStorageServiceTest {
 
     private Path rootPath;
 
-    private FileStorageService storageService;
+    private PictureStorageService storageService;
     private final Supplier<PictureFileItem> fileItemSupplier = TestHelper.uniformPictureItemSupplier();
 
     @Before
     public void setUp() throws Exception {
         this.rootPath = Paths.get(temporaryFolder.newFolder().toURI());
-        this.storageService = new FileStorageService(this.rootPath);
+        this.storageService = new FileSystemPictureStorageService(this.rootPath);
     }
 
     @Test
@@ -105,7 +105,7 @@ public class FileStorageServiceTest {
         Path expectedDirectory = this.rootPath.resolve(item.getPictureItem().getDirectory());
         LOGGER.info("Corrupted directory: {}", expectedDirectory);
 
-        // we create file, rather than directory, this should confuse FileStorageService
+        // we create file, rather than directory, this should confuse FileSystemPictureStorageService
         Files.createFile(expectedDirectory);
 
         assertTrue("Sanity check for existence", Files.exists(expectedDirectory));
@@ -195,7 +195,7 @@ public class FileStorageServiceTest {
         Files.createDirectories(directory);
         Files.write(file, item.getFileContent());
 
-        storageService.deleteFile(item.getPictureItem());
+        storageService.deletePictureFile(item.getPictureItem());
 
         assertTrue("Directory not exists", Files.exists(directory));
         assertFalse("File yet exists", Files.exists(file));
@@ -211,7 +211,7 @@ public class FileStorageServiceTest {
 
         Files.createDirectories(directory);
 
-        storageService.deleteFile(item.getPictureItem());
+        storageService.deletePictureFile(item.getPictureItem());
     }
 
 }

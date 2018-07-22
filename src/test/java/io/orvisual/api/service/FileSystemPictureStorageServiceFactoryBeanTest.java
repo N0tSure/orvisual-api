@@ -20,11 +20,11 @@ import static org.junit.Assert.assertNotNull;
  * Created on 25.05.2018.
  * </p>
  *
- * This test of {@link FileStorageServiceFactoryBean}
+ * This test of {@link FileSystemPictureStorageServiceFactoryBean}
  *
  * @author Artemis A. Sirosh
  */
-public class FileStorageServiceFactoryBeanTest {
+public class FileSystemPictureStorageServiceFactoryBeanTest {
 
     @Rule
     public final EnvironmentVariables environmentVariables = new EnvironmentVariables();
@@ -43,7 +43,7 @@ public class FileStorageServiceFactoryBeanTest {
     @Test(expected = BeanCreationException.class)
     public void shouldDetectNotExistentGalleryDirectory() {
         try (AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext()) {
-            context.registerBean(FileStorageServiceFactoryBean.class);
+            context.registerBean(FileSystemPictureStorageServiceFactoryBean.class);
             context.refresh();
         }
     }
@@ -52,7 +52,7 @@ public class FileStorageServiceFactoryBeanTest {
     public void shouldRejectFileAsGallery() throws IOException {
         Files.createFile(galleryPath);
         try (AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext()) {
-            context.registerBean(FileStorageServiceFactoryBean.class);
+            context.registerBean(FileSystemPictureStorageServiceFactoryBean.class);
             context.refresh();
         }
     }
@@ -61,10 +61,10 @@ public class FileStorageServiceFactoryBeanTest {
     public void shouldCreateFileStorageService() throws IOException {
         Files.createDirectory(galleryPath);
         try (AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext()) {
-            context.registerBean(FileStorageServiceFactoryBean.class);
+            context.registerBean(FileSystemPictureStorageServiceFactoryBean.class);
             context.refresh();
 
-            assertNotNull(context.getBean(FileStorageService.class));
+            assertNotNull(context.getBean(FileSystemPictureStorageServiceFactoryBean.class));
         }
     }
 }

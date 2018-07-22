@@ -2,9 +2,9 @@ package io.orvisual.api.service;
 
 import io.orvisual.api.model.Picture;
 import io.orvisual.api.model.PictureFileItem;
-import lombok.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.lang.NonNull;
 import org.springframework.core.io.PathResource;
 import org.springframework.core.io.Resource;
 
@@ -21,27 +21,28 @@ import java.nio.file.Path;
  *
  * @author Artemis A. Sirosh
  */
-public class FileStorageService {
+class FileSystemPictureStorageService implements PictureStorageService {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(FileStorageService.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(FileSystemPictureStorageServiceFactoryBean.class);
 
     private final Path rootPath;
 
-    public FileStorageService(@NonNull Path rootPath) {
+    FileSystemPictureStorageService(@NonNull Path rootPath) {
         this.rootPath = rootPath;
     }
 
     /**
      * Saves image transport object. First this method saves file, second persist {@link Picture} instance.
-     * @param pictureFileItem image transport object, must not be {@code null}
+     * @param fileItem image transport object, must not be {@code null}
      * @throws PictureFileProcessingException in case of error during IO operations
      */
-    public void savePictureFileItem(@NonNull PictureFileItem pictureFileItem) {
+    @Override
+    public void savePictureFileItem(@NonNull PictureFileItem fileItem) {
 
         Path pictureDirectoryPath;
         try {
 
-            pictureDirectoryPath = this.rootPath.resolve(pictureFileItem.getPictureItem().getDirectory());
+            pictureDirectoryPath = this.rootPath.resolve(fileItem.getPictureItem().getDirectory());
             if (!Files.exists(pictureDirectoryPath))
                 Files.createDirectories(pictureDirectoryPath);
 
@@ -51,11 +52,11 @@ public class FileStorageService {
             throw new PictureFileProcessingException("Creation of directory failed", exc);
         }
 
-        Path pictureFilePath = pictureDirectoryPath.resolve(pictureFileItem.getPictureItem().getFileName());
+        Path pictureFilePath = pictureDirectoryPath.resolve(fileItem.getPictureItem().getFileName());
 
         try {
 
-            Files.write(pictureFilePath, pictureFileItem.getFileContent());
+            Files.write(pictureFilePath, fileItem.getFileContent());
             LOGGER.debug("Picture file recorded as: {}", pictureFilePath);
         } catch (IOException exc) {
             LOGGER.warn("Recording of picture file failed", exc);
@@ -69,6 +70,8 @@ public class FileStorageService {
      * @param picture metadata object instance
      * @return {@link Resource} instance
      */
+    @Override
+    @NonNull
     public Resource resolvePictureResource(@NonNull Picture picture) {
         return new PathResource(this.rootPath.resolve(picture.getDirectory()).resolve(picture.getFileName()));
     }
@@ -78,7 +81,8 @@ public class FileStorageService {
      * @param picture metadata object instance of picture file
      * @throws PictureFileProcessingException in case of error while file deleting
      */
-    public void deleteFile(@NonNull Picture picture) {
+    @Override
+    public void deletePictureFile(@NonNull Picture picture) {
         try {
             Files.delete(this.rootPath.resolve(picture.getDirectory()).resolve(picture.getFileName()));
             LOGGER.debug("Picture file '{}' has been deleted.", picture.getFileName());
