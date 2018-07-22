@@ -18,13 +18,7 @@ import java.time.Instant;
  *         {@code checksum} -- file's checksum
  *     </ul>
  *     <ul>
- *         {@code fileName} -- file's of file with extension
- *     </ul>
- *     <ul>
  *         {@code mimeType} -- MIME type of the file
- *     </ul>
- *     <ul>
- *         {@code directory} -- directory relative to gallery path
  *     </ul>
  *     <ul>
  *         {@code loadedAt} -- Datetime of picture's uploading
@@ -41,9 +35,7 @@ public class Picture {
 
     @Id
     private String checksum;
-    private String fileName;
     private String mimeType;
-    private String directory;
     private Instant loadedAt;
 
 }

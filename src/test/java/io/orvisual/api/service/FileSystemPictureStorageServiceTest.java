@@ -75,9 +75,7 @@ public class FileSystemPictureStorageServiceTest {
         final PictureFileItem fileItem = new PictureFileItem(
                 new Picture(
                         checksumExpected,
-                        null,
                         MediaType.IMAGE_JPEG_VALUE,
-                        null,
                         Instant.EPOCH
                 ), OKLAHOMA_BYTES
         );
@@ -121,9 +119,7 @@ public class FileSystemPictureStorageServiceTest {
         final PictureFileItem fileItem = new PictureFileItem(
                 new Picture(
                         checksumExpected,
-                        null,
                         MediaType.IMAGE_JPEG_VALUE,
-                        null,
                         Instant.EPOCH
                 ), OKLAHOMA_BYTES
         );

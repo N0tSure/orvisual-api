@@ -2,6 +2,7 @@ package io.orvisual.api.service;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.hash.HashFunction;
 import com.google.common.hash.Hashing;
 import io.orvisual.api.model.Picture;
 import io.orvisual.api.model.PictureFileItem;
@@ -29,13 +30,6 @@ import java.util.Optional;
  */
 @Component
 public class MultiPartFileToPictureFileItemConverter implements Converter<MultipartFile, PictureFileItem> {
-
-    private static final Map<String, String> MIME_TYPES_MAP = ImmutableMap.of(
-            MediaType.IMAGE_JPEG_VALUE, "jpg",
-            MediaType.IMAGE_PNG_VALUE, "png",
-            MediaType.IMAGE_GIF_VALUE, "gif",
-            "image/bmp", "bmp"
-    );
 
     private static final List<String> MIME_TYPES = ImmutableList.of(
             MediaType.IMAGE_JPEG_VALUE,
@@ -66,38 +60,17 @@ public class MultiPartFileToPictureFileItemConverter implements Converter<Multip
                 .orElseThrow(() -> new MultiPartFileProcessingException("Unsupported media type: " + type));
     }
 
-
-    /**
-     * This method returns file extension for MIME type given as hint. Look about MIME type on
-     * <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types">MDN</a>.
-     * Supported MIME types:
-     * <ul>
-     *     <li>image/jpeg</li>
-     *     <li>image/png</li>
-     *     <li>image/gif</li>
-     *     <li>image/bmp</li>
-     * </ul>
-     *
-     * @param hint MIME content type from HTTP request
-     * @return file extension associated with this MIME type
-     * @throws MultiPartFileProcessingException in case of unsupported type was given
-     */
-    private static String lookupFileExtension(final String hint) {
-        return Optional
-                .ofNullable(MIME_TYPES_MAP.get(hint))
-                .orElseThrow(() -> new MultiPartFileProcessingException("Unsupported media type: " + hint));
-    }
-
+    private final HashFunction sha256HashFunction = Hashing.sha256();
 
     @Override
     public PictureFileItem convert(final @NonNull MultipartFile source) {
         if (!source.isEmpty()) {
             try {
                 final byte[] multipartContent = source.getBytes();
-                final String checksum = Hashing.sha256().hashBytes(multipartContent).toString();
+                final String checksum = sha256HashFunction.hashBytes(multipartContent).toString();
 
                 return new PictureFileItem(
-                        new Picture(checksum, null, checkMimeType(source.getContentType()), null, Instant.now()),
+                        new Picture(checksum, checkMimeType(source.getContentType()), Instant.now()),
                         multipartContent
                 );
 

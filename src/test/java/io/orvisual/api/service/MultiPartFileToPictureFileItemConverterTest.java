@@ -42,7 +42,7 @@ public class MultiPartFileToPictureFileItemConverterTest {
         LOGGER.info("MultiPartFile content hash: {}", expectedHash);
 
         Picture expectedPicture = new Picture(
-                expectedHash, null, multipartFile.getContentType(), null , Instant.EPOCH
+                expectedHash, multipartFile.getContentType(), Instant.EPOCH
         );
         LOGGER.info("Expected picture: {}", expectedPicture);
 
