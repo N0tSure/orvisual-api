@@ -65,9 +65,7 @@ public final class TestHelper {
         return () -> new PictureFileItem(
                 new Picture(
                         sha256Function.hashBytes(OKLAHOMA_BYTES).toString(),
-                        "foo.jpg",
                         MediaType.IMAGE_JPEG_VALUE,
-                        "bar",
                         Instant.EPOCH
                 ), OKLAHOMA_BYTES
         );
@@ -81,9 +79,7 @@ public final class TestHelper {
             ).toString();
             return new Picture(
                     hash,
-                    hash + ".jpg",
                     MediaType.IMAGE_JPEG_VALUE,
-                    hash.substring(0, 4),
                     Instant.now()
             );
         };

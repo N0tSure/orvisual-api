@@ -4,8 +4,8 @@ import io.orvisual.api.TestHelper;
 import io.orvisual.api.model.Picture;
 import io.orvisual.api.model.PictureFileItem;
 import io.orvisual.api.repository.PictureRepository;
-import io.orvisual.api.service.FileStorageService;
 import io.orvisual.api.service.PictureFileProcessingException;
+import io.orvisual.api.service.PictureStorageService;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -45,7 +45,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class PictureResourceTest {
 
     @MockBean
-    private FileStorageService storageService;
+    private PictureStorageService storageService;
 
     @Autowired
     private PictureRepository pictureRepository;
@@ -94,7 +94,7 @@ public class PictureResourceTest {
                 .andExpect(status().isNoContent());
 
         assertFalse("fixture not removed", pictureRepository.existsById(fixturePicture.getChecksum()));
-        verify(storageService).deleteFile(fixturePicture);
+        verify(storageService).deletePictureFile(fixturePicture);
 
     }
 
@@ -108,7 +108,7 @@ public class PictureResourceTest {
                 .andDo(log())
                 .andExpect(status().isNotFound());
 
-        verify(storageService, never()).deleteFile(any());
+        verify(storageService, never()).deletePictureFile(any());
 
     }
 
@@ -117,7 +117,7 @@ public class PictureResourceTest {
         Picture fixturePicture = itemSupplier.get().getPictureItem();
         fixturePicture = pictureRepository.save(fixturePicture);
 
-        doThrow(new PictureFileProcessingException("deletion failed")).when(storageService).deleteFile(any());
+        doThrow(new PictureFileProcessingException("deletion failed")).when(storageService).deletePictureFile(any());
 
         assertTrue("sanity check failed", pictureRepository.existsById(fixturePicture.getChecksum()));
 
@@ -128,7 +128,7 @@ public class PictureResourceTest {
         assertFalse("fixture must be removed first",
                 pictureRepository.existsById(fixturePicture.getChecksum()));
 
-        verify(storageService).deleteFile(fixturePicture);
+        verify(storageService).deletePictureFile(fixturePicture);
 
     }
 

@@ -32,9 +32,9 @@ import static org.junit.Assert.*;
  * @author Artemis A. Sirosh
  */
 @RunWith(MockitoJUnitRunner.class)
-public class FileStorageServiceTest {
+public class FileSystemPictureStorageServiceTest {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(FileStorageServiceTest.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(FileSystemPictureStorageServiceTest.class);
 
     private static final byte[] OKLAHOMA_BYTES = new byte[]{'O', 'K', 'L', 'A', 'H', 'O', 'M', 'A'};
     
@@ -43,26 +43,26 @@ public class FileStorageServiceTest {
 
     private Path rootPath;
 
-    private FileStorageService storageService;
+    private PictureStorageService storageService;
     private final Supplier<PictureFileItem> fileItemSupplier = TestHelper.uniformPictureItemSupplier();
 
     @Before
     public void setUp() throws Exception {
         this.rootPath = Paths.get(temporaryFolder.newFolder().toURI());
-        this.storageService = new FileStorageService(this.rootPath);
+        this.storageService = new FileSystemPictureStorageService(this.rootPath);
     }
 
     @Test
     public void shouldCreateDirectoryForPicture() {
         PictureFileItem item = fileItemSupplier.get();
 
-        Path expectedDirectoryPath = this.rootPath.resolve(item.getPictureItem().getDirectory());
+        Path expectedDirectoryPath = this.rootPath.resolve(item.getPictureItem().getChecksum().substring(0, 4));
         LOGGER.info("Expected directory: {}", expectedDirectoryPath);
 
         storageService.savePictureFileItem(item);
 
-        assertTrue(Files.exists(expectedDirectoryPath));
-        assertTrue(Files.isDirectory(expectedDirectoryPath));
+        assertTrue("Picture directory not exists", Files.exists(expectedDirectoryPath));
+        assertTrue("Picture directory file item not a directory", Files.isDirectory(expectedDirectoryPath));
 
     }
 
@@ -75,9 +75,7 @@ public class FileStorageServiceTest {
         final PictureFileItem fileItem = new PictureFileItem(
                 new Picture(
                         checksumExpected,
-                        nameOfFileExpected,
                         MediaType.IMAGE_JPEG_VALUE,
-                        directoryNameExpected,
                         Instant.EPOCH
                 ), OKLAHOMA_BYTES
         );
@@ -91,9 +89,9 @@ public class FileStorageServiceTest {
 
         storageService.savePictureFileItem(fileItem);
 
-        assertTrue(Files.exists(directoryPathExpected));
-        assertTrue(Files.isDirectory(directoryPathExpected));
-        assertTrue(Files.exists(pathOfFileExpected));
+        assertTrue("Directory not exists", Files.exists(directoryPathExpected));
+        assertTrue("Directory file item not a directory", Files.isDirectory(directoryPathExpected));
+        assertTrue("Picture file not exists", Files.exists(pathOfFileExpected));
 
     }
 
@@ -102,10 +100,10 @@ public class FileStorageServiceTest {
         PictureFileItem item = fileItemSupplier.get();
         LOGGER.info("Picture file item: {}", item);
 
-        Path expectedDirectory = this.rootPath.resolve(item.getPictureItem().getDirectory());
+        Path expectedDirectory = this.rootPath.resolve(item.getPictureItem().getChecksum().substring(0, 4));
         LOGGER.info("Corrupted directory: {}", expectedDirectory);
 
-        // we create file, rather than directory, this should confuse FileStorageService
+        // we create file, rather than directory, this should confuse FileSystemPictureStorageService
         Files.createFile(expectedDirectory);
 
         assertTrue("Sanity check for existence", Files.exists(expectedDirectory));
@@ -121,18 +119,16 @@ public class FileStorageServiceTest {
         final PictureFileItem fileItem = new PictureFileItem(
                 new Picture(
                         checksumExpected,
-                        checksumExpected + ".jpg",
                         MediaType.IMAGE_JPEG_VALUE,
-                        checksumExpected.substring(0, 4),
                         Instant.EPOCH
                 ), OKLAHOMA_BYTES
         );
         LOGGER.info("Picture file item: {}", fileItem);
 
-        final Path directoryPathExpected = this.rootPath.resolve(fileItem.getPictureItem().getDirectory());
+        final Path directoryPathExpected = this.rootPath.resolve(checksumExpected.substring(0, 4));
         LOGGER.info("Directory expected: {}", directoryPathExpected);
 
-        final Path pathOfFileExpected = directoryPathExpected.resolve(fileItem.getPictureItem().getFileName());
+        final Path pathOfFileExpected = directoryPathExpected.resolve(checksumExpected + ".jpg");
         LOGGER.info("File expected: {}", pathOfFileExpected);
 
         storageService.savePictureFileItem(fileItem);
@@ -147,10 +143,10 @@ public class FileStorageServiceTest {
         PictureFileItem item = fileItemSupplier.get();
         LOGGER.info("Picture file item: {}", item);
 
-        Path directory = this.rootPath.resolve(item.getPictureItem().getDirectory());
+        Path directory = this.rootPath.resolve(item.getPictureItem().getChecksum().substring(0, 4));
         LOGGER.info("Directory: {}", directory);
 
-        Path file = directory.resolve(item.getPictureItem().getFileName());
+        Path file = directory.resolve(item.getPictureItem().getChecksum() + ".jpg");
         LOGGER.info("Corrupted file: {}", file);
 
         Files.createDirectories(directory);
@@ -166,10 +162,10 @@ public class FileStorageServiceTest {
         Picture picture = fileItemSupplier.get().getPictureItem();
         LOGGER.info("Picture: {}", picture);
 
-        Path parentDir = this.rootPath.resolve(picture.getDirectory());
+        Path parentDir = this.rootPath.resolve(picture.getChecksum().substring(0, 4));
         LOGGER.info("Picture directory: {}", parentDir);
 
-        Path pictureFile = parentDir.resolve(picture.getFileName());
+        Path pictureFile = parentDir.resolve(picture.getChecksum() + ".jpg");
         LOGGER.info("Picture file directory: {}", pictureFile);
 
         Files.createDirectories(parentDir);
@@ -186,16 +182,16 @@ public class FileStorageServiceTest {
         PictureFileItem item = fileItemSupplier.get();
         LOGGER.info("Picture file item: {}", item);
 
-        Path directory = this.rootPath.resolve(item.getPictureItem().getDirectory());
+        Path directory = this.rootPath.resolve(item.getPictureItem().getChecksum().substring(0, 4));
         LOGGER.info("Directory: {}", directory);
 
-        Path file = directory.resolve(item.getPictureItem().getFileName());
+        Path file = directory.resolve(item.getPictureItem().getChecksum() + ".jpg");
         LOGGER.info("Picture file: {}", file);
 
         Files.createDirectories(directory);
         Files.write(file, item.getFileContent());
 
-        storageService.deleteFile(item.getPictureItem());
+        storageService.deletePictureFile(item.getPictureItem());
 
         assertTrue("Directory not exists", Files.exists(directory));
         assertFalse("File yet exists", Files.exists(file));
@@ -206,12 +202,12 @@ public class FileStorageServiceTest {
         PictureFileItem item = fileItemSupplier.get();
         LOGGER.info("Picture file item: {}", item);
 
-        Path directory = this.rootPath.resolve(item.getPictureItem().getDirectory());
+        Path directory = this.rootPath.resolve(item.getPictureItem().getChecksum().substring(0, 4));
         LOGGER.info("Directory: {}", directory);
 
         Files.createDirectories(directory);
 
-        storageService.deleteFile(item.getPictureItem());
+        storageService.deletePictureFile(item.getPictureItem());
     }
 
 }

@@ -21,33 +21,34 @@ import static com.google.common.base.Preconditions.checkState;
  * @author Artemis A. Sirosh
  */
 @Component
-public class FileStorageServiceFactoryBean extends AbstractFactoryBean<FileStorageService> implements EnvironmentAware {
+public class FileSystemPictureStorageServiceFactoryBean extends AbstractFactoryBean<FileSystemPictureStorageService>
+        implements EnvironmentAware {
 
     private Environment environment;
 
     @Autowired
-    public FileStorageServiceFactoryBean() {
+    public FileSystemPictureStorageServiceFactoryBean() {
         super();
     }
 
     @Override
-    public void setEnvironment(@SuppressWarnings("NullableProblems") Environment environment) {
+    public void setEnvironment(@NonNull Environment environment) {
         this.environment = environment;
     }
 
     @Override
     public Class<?> getObjectType() {
-        return FileStorageService.class;
+        return FileSystemPictureStorageService.class;
     }
 
     @Override
     @NonNull
-    protected FileStorageService createInstance() {
+    protected FileSystemPictureStorageService createInstance() {
         Path galleryPath = Paths.get(environment.getRequiredProperty("GALLERY_DIR"));
         checkState(Files.exists(galleryPath), "Directory '%s' not exists", galleryPath);
         checkState(Files.isDirectory(galleryPath), "File item '%s' not directory", galleryPath);
         checkState(Files.isWritable(galleryPath), "Directory '%s' not writable", galleryPath);
 
-        return new FileStorageService(galleryPath);
+        return new FileSystemPictureStorageService(galleryPath);
     }
 }
