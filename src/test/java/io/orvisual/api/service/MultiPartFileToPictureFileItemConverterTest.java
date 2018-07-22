@@ -41,14 +41,8 @@ public class MultiPartFileToPictureFileItemConverterTest {
         String expectedHash = Hashing.sha256().hashBytes(multipartFile.getBytes()).toString();
         LOGGER.info("MultiPartFile content hash: {}", expectedHash);
 
-        String expectedDirectoryName = expectedHash.substring(0, 4);
-        LOGGER.info("Expected folder name: {}", expectedDirectoryName);
-
-        String expectedFileName = expectedHash + ".jpg";
-        LOGGER.info("Expected file name: {}", expectedFileName);
-
         Picture expectedPicture = new Picture(
-                expectedHash, expectedFileName, multipartFile.getContentType(), expectedDirectoryName , Instant.EPOCH
+                expectedHash, null, multipartFile.getContentType(), null , Instant.EPOCH
         );
         LOGGER.info("Expected picture: {}", expectedPicture);
 
@@ -72,18 +66,10 @@ public class MultiPartFileToPictureFileItemConverterTest {
         );
 
         assertEquals(
-                "Directory name not equal",
-                expectedDirectoryName,
-                actualFileItem.getPictureItem().getDirectory()
-        );
-
-        assertEquals(
                 "MIME type not equal",
                 multipartFile.getContentType(),
                 actualFileItem.getPictureItem().getMimeType()
         );
-
-        assertEquals("File names not equal", expectedFileName, actualFileItem.getPictureItem().getFileName());
 
     }
 

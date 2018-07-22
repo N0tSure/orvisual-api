@@ -1,5 +1,6 @@
 package io.orvisual.api.service;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.hash.Hashing;
 import io.orvisual.api.model.Picture;
@@ -12,6 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.time.Instant;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -34,6 +36,35 @@ public class MultiPartFileToPictureFileItemConverter implements Converter<Multip
             MediaType.IMAGE_GIF_VALUE, "gif",
             "image/bmp", "bmp"
     );
+
+    private static final List<String> MIME_TYPES = ImmutableList.of(
+            MediaType.IMAGE_JPEG_VALUE,
+            MediaType.IMAGE_PNG_VALUE,
+            MediaType.IMAGE_GIF_VALUE,
+            "image/bmp"
+    );
+
+    /**
+     * This method return MIME type of MultiPart content or throw exception
+     * if given MIME type not supported. Look about MIME type on
+     * <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types">MDN</a>.
+     * Supported MIME types:
+     * <ul>
+     *   <li>image/jpeg</li>
+     *   <li>image/png</li>
+     *   <li>image/gif</li>
+     *   <li>image/bmp</li>
+     * </ul>
+     *
+     * @param type MIME content type from HTTP request
+     * @return MIME type string
+     * @throws MultiPartFileProcessingException in case of unsupported type was given
+     */
+    private static String checkMimeType(final String type) throws MultiPartFileProcessingException {
+        return MIME_TYPES.stream().filter(t -> t.equalsIgnoreCase(type))
+                .findFirst()
+                .orElseThrow(() -> new MultiPartFileProcessingException("Unsupported media type: " + type));
+    }
 
 
     /**
@@ -64,11 +95,9 @@ public class MultiPartFileToPictureFileItemConverter implements Converter<Multip
             try {
                 final byte[] multipartContent = source.getBytes();
                 final String checksum = Hashing.sha256().hashBytes(multipartContent).toString();
-                final String directoryName = checksum.substring(0, 4);
-                final String fileName = checksum + '.' + lookupFileExtension(source.getContentType());
 
                 return new PictureFileItem(
-                        new Picture(checksum, fileName, source.getContentType(), directoryName, Instant.now()),
+                        new Picture(checksum, null, checkMimeType(source.getContentType()), null, Instant.now()),
                         multipartContent
                 );
 
