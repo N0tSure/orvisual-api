@@ -75,8 +75,6 @@ public class FileControllerTest {
 
         mockMvc.perform(multipart("/files").file(mockMultiPart))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.fileName", equalTo(expectedFileItem.getPictureItem().getFileName())))
-                .andExpect(jsonPath("$.directory", equalTo(expectedFileItem.getPictureItem().getDirectory())))
                 .andExpect(jsonPath("$.mimeType", equalTo(expectedFileItem.getPictureItem().getMimeType())))
                 .andExpect(jsonPath(
                         "$._links.self.href", endsWith(expectedFileItem.getPictureItem().getChecksum())
@@ -108,8 +106,6 @@ public class FileControllerTest {
         mockMvc.perform(multipart("/files").file(mockMultiPart))
                 .andDo(log())
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.fileName", equalTo(expectedFileItem.getPictureItem().getFileName())))
-                .andExpect(jsonPath("$.directory", equalTo(expectedFileItem.getPictureItem().getDirectory())))
                 .andExpect(jsonPath("$.mimeType", equalTo(expectedFileItem.getPictureItem().getMimeType())))
                 .andExpect(jsonPath(
                         "$._links.self.href", endsWith(expectedFileItem.getPictureItem().getChecksum()))
