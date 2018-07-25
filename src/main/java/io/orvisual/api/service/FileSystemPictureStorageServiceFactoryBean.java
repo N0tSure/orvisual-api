@@ -28,16 +28,10 @@ import static com.google.common.base.Preconditions.checkState;
  * @see Environment
  * @author Artemis A. Sirosh
  */
-@Component
 public class FileSystemPictureStorageServiceFactoryBean extends AbstractFactoryBean<FileSystemPictureStorageService>
         implements EnvironmentAware {
 
     private Environment environment;
-
-    @Autowired
-    public FileSystemPictureStorageServiceFactoryBean() {
-        super();
-    }
 
     @Override
     public void setEnvironment(@NonNull Environment environment) {

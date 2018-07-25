@@ -11,6 +11,7 @@ import org.springframework.beans.factory.config.AbstractFactoryBean;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.core.env.Environment;
 import org.springframework.lang.NonNull;
+import org.springframework.stereotype.Component;
 
 /**
  * <p>
@@ -38,6 +39,7 @@ import org.springframework.lang.NonNull;
  * @see Regions
  * @author Artemis A. Sirosh
  */
+@Component
 public class AmazonS3PictureStorageServiceFactoryBean extends
         AbstractFactoryBean<AmazonS3PictureStorageService> implements EnvironmentAware {
 
