@@ -34,6 +34,8 @@ import org.springframework.lang.NonNull;
  *     </li>
  * </ul>
  *
+ * @see Environment
+ * @see Regions
  * @author Artemis A. Sirosh
  */
 public class AmazonS3PictureStorageServiceFactoryBean extends

@@ -22,6 +22,7 @@ import java.io.InputStream;
  * picture file on Amazon S3 cloud. To instantiate this component use
  * {@link AmazonS3PictureStorageServiceFactoryBean}.
  *
+ * @see AmazonS3PictureStorageServiceFactoryBean
  * @author Artemis A. Sirosh
  */
 class AmazonS3PictureStorageService implements PictureStorageService {

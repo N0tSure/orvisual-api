@@ -21,8 +21,11 @@ import java.util.Optional;
  * Created on 20.05.2018.
  * </p>
  *
- * This method provides operation with image files and it's metadata objects ({@link Picture}).
+ * This method provides operation with image files and it's metadata objects
+ * ({@link Picture}). For instantiate use
+ * {@link FileSystemPictureStorageServiceFactoryBean}.
  *
+ * @see FileSystemPictureStorageServiceFactoryBean
  * @author Artemis A. Sirosh
  */
 class FileSystemPictureStorageService implements PictureStorageService {
