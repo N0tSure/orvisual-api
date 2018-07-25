@@ -18,18 +18,20 @@ import static com.google.common.base.Preconditions.checkState;
  * Created on 25.05.2018.
  * </p>
  *
+ * This {@link org.springframework.beans.factory.FactoryBean} instantiate
+ * {@link FileSystemPictureStorageService} using {@link Environment} to
+ * configure bean. For successful configuring {@link Environment} should contain
+ * property {@literal GALLERY_DIR}. This property is a name of gallery path, if
+ * this path not exists or not a directory instantiation will failed.
+ *
+ * @see org.springframework.beans.factory.FactoryBean
+ * @see Environment
  * @author Artemis A. Sirosh
  */
-@Component
 public class FileSystemPictureStorageServiceFactoryBean extends AbstractFactoryBean<FileSystemPictureStorageService>
         implements EnvironmentAware {
 
     private Environment environment;
-
-    @Autowired
-    public FileSystemPictureStorageServiceFactoryBean() {
-        super();
-    }
 
     @Override
     public void setEnvironment(@NonNull Environment environment) {
@@ -41,6 +43,16 @@ public class FileSystemPictureStorageServiceFactoryBean extends AbstractFactoryB
         return FileSystemPictureStorageService.class;
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * Creates instance of {@link FileSystemPictureStorageService}
+     * using {@link Environment}.
+     *
+     * @return instance of {@link FileSystemPictureStorageService}.
+     * @throws IllegalStateException if {@literal GALLERY_DIR} missing in
+     * {@link Environment} or path of gallery not exists or not a directory.
+     */
     @Override
     @NonNull
     protected FileSystemPictureStorageService createInstance() {

@@ -23,13 +23,22 @@ repositories {
     mavenCentral()
 }
 
+dependencyManagement {
+    imports {
+        mavenBom 'com.amazonaws:aws-java-sdk-bom:1.11.228'
+    }
+}
+
 dependencies {
+
     compile('org.springframework.boot:spring-boot-starter-data-jpa')
     compile('org.springframework.boot:spring-boot-starter-data-rest')
     compile('org.springframework.boot:spring-boot-starter-hateoas')
     compile('org.springframework.boot:spring-boot-starter-web')
     compile('org.springframework.data:spring-data-rest-hal-browser')
+
     compile('com.google.guava:guava:25.0-jre')
+    compile('com.amazonaws:aws-java-sdk-s3')
 
     runtime('org.springframework.boot:spring-boot-devtools')
     runtime('com.h2database:h2')
