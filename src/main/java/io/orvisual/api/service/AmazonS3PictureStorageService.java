@@ -18,6 +18,10 @@ import java.io.InputStream;
 /**
  * Created on 22 Jul, 2018.
  *
+ * This implementation of {@link PictureStorageService} provide API for storing
+ * picture file on Amazon S3 cloud. To instantiate this component use
+ * {@link AmazonS3PictureStorageServiceFactoryBean}.
+ *
  * @author Artemis A. Sirosh
  */
 class AmazonS3PictureStorageService implements PictureStorageService {
@@ -32,6 +36,13 @@ class AmazonS3PictureStorageService implements PictureStorageService {
         this.bucketName = bucketName;
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param picture contains information of a file, which will be removed.
+     * @throws PictureFileProcessingException if while deleting.
+     * {@link com.amazonaws.services.s3.model.S3Object} from AWS S3 error occurs.
+     */
     @Override
     public void deletePictureFile(@NonNull Picture picture) throws PictureFileProcessingException {
         try {
@@ -42,6 +53,16 @@ class AmazonS3PictureStorageService implements PictureStorageService {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param picture contains information about a file, for searching.
+     * @return {@link Resource} from content of
+     *         {@link com.amazonaws.services.s3.model.S3Object}.
+     *
+     * @throws PictureFileProcessingException if while requesting AWS S3 error
+     *         occurs.
+     */
     @Override
     @NonNull
     public Resource resolvePictureResource(@NonNull Picture picture) throws PictureFileProcessingException {
@@ -55,6 +76,14 @@ class AmazonS3PictureStorageService implements PictureStorageService {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param fileItem {@link PictureFileItem} with metadata of file and
+     *                                        it's content.
+     * @throws PictureFileProcessingException if due picture content saving in
+     *         AWS S3 bucket error occurs.
+     */
     @Override
     public void savePictureFileItem(@NonNull PictureFileItem fileItem) throws PictureFileProcessingException {
 
