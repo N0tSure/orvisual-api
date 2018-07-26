@@ -89,7 +89,31 @@ Delete operation except that removes `Picture` record, also removes picture file
 
 #### Order resource
 
-Will be written as soon as, a code will be written.
+Order resource provides order data like client's contacts, order execution status and related pictures. Client's 
+contact attributes has constraints:
+
+| Attribute | Constraint | Optional |
+|-----------|------------|----------|
+| `clientName` | not empty or whitespace | no |
+| `clientPhone` | must match `\+?\d+` | no |
+| `clientEmail` | must match `.{2,}[@].{2,}` | yes |
+| `description` | must have length less than 4000 characters | yes |
+
+All these attributes are strings. Optional attributes may not present in the model, but if they present must be valid. 
+Validation applies to `POST`, `PUT` and `PATCH` operations.
+
+Order's status is described by `acceptedAt` and `completedAt` attributes:
+
+| Accepted at | Completed at | Status | Description |
+|-------------|--------------|--------|-------------|
+| `null` | `null` | New | Just created Order |
+| not `null` | `null` | In progress | Order accepted to work |
+| not `null` | not `null` | Completed | Works at Order has been completed |
+| `null` | not `null` | Closed | Order closed without execution |
+
+All new Order has status _new_ i.e. both `acceptedAt` and `completedAt` is `null`.
+
+When an Order removes, all related Pictures will be removed, except Pictures which related to another Order.
 
 ### File resource
 
@@ -162,5 +186,5 @@ Date: Sat, 09 Jun 2018 16:59:02 GMT
 [image file binary data]
 ```
 
-If a file with given checksum exists it will be returned, in headers may be found `Content-Type` header, which represents
-image's type.
+If a file with given checksum exists it will be returned, in headers may be found `Content-Type` header, which 
+represents image's type.
