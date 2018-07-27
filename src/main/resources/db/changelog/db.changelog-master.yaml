@@ -1,0 +1,38 @@
+# Created on 27-07-2018
+#
+# Database changelog for OrVisual application.
+#
+# author: Artemis A. Sirosh
+databaseChangeLog:
+
+  - property:
+      name: type.bigint
+      value: BIGINT
+      dbms: h2,postgresql
+
+  - property:
+      name: type.short.text
+      value: VARCHAR(255)
+      dbms: h2,postgresql
+
+  - property:
+      name: type.long.text
+      value: TEXT
+      dbms: h2,postgresql
+
+  - property:
+      name: type.timestamp
+      value: TIMESTAMP
+      dbms: h2,postgresql
+
+  - property:
+      name: type.checksum
+      value: VARCHAR(64)
+      dbms: h2,postgresql
+
+  - property:
+      name: schema.name
+      value: TEST
+
+  - includeAll:
+      path: db/changelog/versions
