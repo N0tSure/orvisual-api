@@ -40,8 +40,8 @@ public class Order {
             strategy = GenerationType.AUTO,
             generator = "ORDER_ID_SEQ"
     )
-    @SequenceGenerator(name = "ORDER_ID_SEQ")
-    @Column(name = "ORDER_ID")
+    @SequenceGenerator(name = "ORDER_ID_SEQ", sequenceName = "ORDER_ID_SEQ")
+    @Column(name = "ID_ORDER")
     private Long id;
 
     @Column(name = "CLIENT_NAME")
