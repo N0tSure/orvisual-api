@@ -4,8 +4,10 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.Table;
 import java.time.Instant;
 
 /**
@@ -28,14 +30,20 @@ import java.time.Instant;
  * @author Artemis A. Sirosh
  */
 @Entity
+@Table(name = "PICTURES")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class Picture {
 
     @Id
+    @Column(name = "CHECKSUM")
     private String checksum;
+
+    @Column(name = "MIME_TYPE")
     private String mimeType;
+
+    @Column(name = "LOADED_AT")
     private Instant loadedAt;
 
 }
