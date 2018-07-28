@@ -65,7 +65,7 @@ public class Order {
     @ManyToMany
     @JoinTable(
             name = "ORDER_SUMMARY_PICTURES",
-            joinColumns = { @JoinColumn(name = "ORDER_ID") },
+            joinColumns = { @JoinColumn(name = "ID_ORDER") },
             inverseJoinColumns = { @JoinColumn(name = "CHECKSUM") }
     )
     private List<Picture> pictures;
