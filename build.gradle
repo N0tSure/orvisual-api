@@ -39,9 +39,10 @@ dependencies {
 
     compile('com.google.guava:guava:25.0-jre')
     compile('com.amazonaws:aws-java-sdk-s3')
+    compile('org.liquibase:liquibase-core')
 
     runtime('org.springframework.boot:spring-boot-devtools')
-    runtime('com.h2database:h2')
+    runtime('org.postgresql:postgresql')
 
     compileOnly('org.projectlombok:lombok')
 
@@ -49,4 +50,6 @@ dependencies {
     testCompile('com.github.stefanbirkner:system-rules:1.16.1')
 
     testCompileOnly('org.projectlombok:lombok')
+
+    testRuntime('com.h2database:h2')
 }
