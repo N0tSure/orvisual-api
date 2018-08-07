@@ -188,3 +188,47 @@ Date: Sat, 09 Jun 2018 16:59:02 GMT
 
 If a file with given checksum exists it will be returned, in headers may be found `Content-Type` header, which 
 represents image's type.
+
+## Deployment
+
+To deploy OrVisual application may be used [Docker](https://www.docker.com/) image. Docker image may be uploaded from
+[Docker Hub](https://hub.docker.com/r/asirosh/orvisual-api/) or built from sources. 
+
+Pull from Docker Hub:
+
+`$ docker pull asirosh/orvisual-api`
+
+Build from sources:
+
+`$ ./gradlew bootJar`
+
+`$ docker build -t orvisual-api .`
+
+### Database
+
+OrVisual use PostgreSQL database, if an application starts first time at given database instance, it applies database 
+migration and creates all database objects required for application. Application creates tables `DATABASECHANGELOG` 
+and `DATABASECHANGELOGLOCK` in default schema (in this case PUBLIC).
+
+### Data storage
+
+Application uses [Amazon S3](https://aws.amazon.com/s3/getting-started/?nc=sn&loc=5&dn=1) cloud for the file storage. 
+For deploy, an application should be set Amazon S3 access key, secret and bucket name.
+
+### Docker image usage
+
+For successful deploy of OrVisual application, when docker container creating should be set next system environment 
+properties:
+
+| Name | Description |
+|------|-------------|
+| `DB_URL` | Database URL |
+| `DB_USER` | Database user |
+| `DB_PASSWD` | Database password |
+| `DB_SCHEMA` | Database schema |
+| `AWS_ACCESS_KEY_ID` | Amazon S3 key |
+| `AWS_SECRET_ACCESS_KEY` | Amazon S3 secret |
+| `AWS_REGION` | Amazon region |
+| `AWS_BUCKET_NAME` | Amazon Bucket name |
+
+Additionally, for the application be able to communicate with network containers port 8080 must be exposed. 
