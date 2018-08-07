@@ -6,6 +6,16 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [0.3.0] - 2018-08-07
+### Added
+ - Order model validation
+ - Amazon S3 cloud for file storage
+ - Database migration support
+ - Docker environment support
+ 
+### Changed
+ - Production database now Postgres
+
 ## [0.2.0] - 2018-07-02
 ### Changed
  - When image multipart was uploaded, it returns Picture as HATEOAS *resource* 

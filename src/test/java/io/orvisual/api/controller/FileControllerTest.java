@@ -3,8 +3,8 @@ package io.orvisual.api.controller;
 import io.orvisual.api.TestHelper;
 import io.orvisual.api.model.PictureFileItem;
 import io.orvisual.api.repository.PictureRepository;
-import io.orvisual.api.service.FileStorageService;
 import io.orvisual.api.service.PictureFileProcessingException;
+import io.orvisual.api.service.PictureStorageService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -44,7 +44,7 @@ public class FileControllerTest {
     private final Supplier<PictureFileItem> fileItemSupplier = TestHelper.uniformPictureItemSupplier();
 
     @MockBean
-    private FileStorageService storageService;
+    private PictureStorageService storageService;
 
     @MockBean
     private PictureRepository pictureRepository;
@@ -75,8 +75,6 @@ public class FileControllerTest {
 
         mockMvc.perform(multipart("/files").file(mockMultiPart))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.fileName", equalTo(expectedFileItem.getPictureItem().getFileName())))
-                .andExpect(jsonPath("$.directory", equalTo(expectedFileItem.getPictureItem().getDirectory())))
                 .andExpect(jsonPath("$.mimeType", equalTo(expectedFileItem.getPictureItem().getMimeType())))
                 .andExpect(jsonPath(
                         "$._links.self.href", endsWith(expectedFileItem.getPictureItem().getChecksum())
@@ -108,8 +106,6 @@ public class FileControllerTest {
         mockMvc.perform(multipart("/files").file(mockMultiPart))
                 .andDo(log())
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.fileName", equalTo(expectedFileItem.getPictureItem().getFileName())))
-                .andExpect(jsonPath("$.directory", equalTo(expectedFileItem.getPictureItem().getDirectory())))
                 .andExpect(jsonPath("$.mimeType", equalTo(expectedFileItem.getPictureItem().getMimeType())))
                 .andExpect(jsonPath(
                         "$._links.self.href", endsWith(expectedFileItem.getPictureItem().getChecksum()))

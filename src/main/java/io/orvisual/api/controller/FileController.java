@@ -3,7 +3,7 @@ package io.orvisual.api.controller;
 import io.orvisual.api.model.Picture;
 import io.orvisual.api.model.PictureFileItem;
 import io.orvisual.api.repository.PictureRepository;
-import io.orvisual.api.service.FileStorageService;
+import io.orvisual.api.service.PictureStorageService;
 import org.springframework.data.rest.webmvc.support.RepositoryEntityLinks;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.Resource;
@@ -30,12 +30,12 @@ import java.util.Optional;
 @RequestMapping("/files")
 public class FileController {
 
-    private final FileStorageService storageService;
+    private final PictureStorageService storageService;
     private final PictureRepository pictureRepository;
     private final RepositoryEntityLinks entityLinks;
 
     public FileController(
-            FileStorageService storageService, PictureRepository pictureRepository, RepositoryEntityLinks entityLinks
+            PictureStorageService storageService, PictureRepository pictureRepository, RepositoryEntityLinks entityLinks
     ) {
         this.storageService = storageService;
         this.pictureRepository = pictureRepository;

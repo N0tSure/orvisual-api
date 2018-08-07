@@ -36,16 +36,38 @@ public class Order {
     }
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(
+            strategy = GenerationType.AUTO,
+            generator = "ORDER_ID_SEQ"
+    )
+    @SequenceGenerator(name = "ORDER_ID_SEQ", sequenceName = "ORDER_ID_SEQ")
+    @Column(name = "ID_ORDER")
     private Long id;
+
+    @Column(name = "CLIENT_NAME")
     private String clientName;
+
+    @Column(name = "CLIENT_PHONE")
     private String clientPhone;
+
+    @Column(name = "CLIENT_EMAIL")
     private String clientEmail;
+
+    @Column(name = "DESCRIPTION")
     private String description;
+
+    @Column(name = "ACCEPTED_AT")
     private Instant acceptedAt;
+
+    @Column(name = "COMPLETED_AT")
     private Instant completedAt;
 
     @ManyToMany
+    @JoinTable(
+            name = "ORDER_SUMMARY_PICTURES",
+            joinColumns = { @JoinColumn(name = "ID_ORDER") },
+            inverseJoinColumns = { @JoinColumn(name = "CHECKSUM") }
+    )
     private List<Picture> pictures;
 
 }

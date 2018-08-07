@@ -1,0 +1,150 @@
+# Created on 27-07-2018
+#
+# Database changelog for OrVisual application 0.2.0 version.
+#
+# author: Artemis A. Sirosh
+databaseChangeLog:
+
+  - changeSet:
+      id: 1
+      author: sirosh
+      comment: Create order id sequence
+      changes:
+          - createSequence:
+              sequenceName: ORDER_ID_SEQ
+              schemaName: ${schema.name}
+
+  - changeSet:
+      id: 2
+      author: sirosh
+      comment: Create order summary table
+      changes:
+          - createTable:
+              tableName: ORDER_SUMMARY
+              schemaName: ${schema.name}
+              columns:
+                 - column:
+                     name: ID_ORDER
+                     type: ${type.bigint}
+                     constraints:
+                       primaryKey: true
+
+                 - column:
+                     name: CLIENT_NAME
+                     type: ${type.short.text}
+                     constraints:
+                       nullable: false
+
+                 - column:
+                     name: CLIENT_PHONE
+                     type: ${type.short.text}
+                     constraints:
+                       nullable: false
+
+                 - column:
+                     name: CLIENT_EMAIL
+                     type: ${type.short.text}
+
+                 - column:
+                     name: DESCRIPTION
+                     type: ${type.long.text}
+
+                 - column:
+                     name: ACCEPTED_AT
+                     type: ${type.timestamp}
+
+                 - column:
+                     name: COMPLETED_AT
+                     type: ${type.timestamp}
+
+
+  - changeSet:
+      id: 3
+      author: sirosh
+      comment: Create pictures metadata table
+      changes:
+          - createTable:
+              tableName: PICTURES
+              schemaName: ${schema.name}
+              columns:
+                  - column:
+                      name: CHECKSUM
+                      type: ${type.checksum}
+                      constraints:
+                        primaryKey: true
+
+                  - column:
+                      name: MIME_TYPE
+                      type: ${type.short.text}
+                      constraints:
+                        nullable: false
+
+                  - column:
+                     name: LOADED_AT
+                     type: ${type.timestamp}
+                     constraints:
+                       nullable: false
+
+  - changeSet:
+      id: 4
+      author: sirosh
+      comment: Created table of relation between order and pictures
+      changes:
+          - createTable:
+              tableName: ORDER_SUMMARY_PICTURES
+              schemaName: ${schema.name}
+              columns:
+                  - column:
+                      name: ID_ORDER
+                      type: ${type.bigint}
+                      constraints:
+                        nullable: false
+
+                  - column:
+                      name: CHECKSUM
+                      type: ${type.checksum}
+                      constraints:
+                        nullable: false
+
+  - changeSet:
+      id: 5
+      author: sirosh
+      comment: Order id foreign key constraint
+      changes:
+          - addForeignKeyConstraint:
+              baseColumnNames: ID_ORDER
+              baseTableName: ORDER_SUMMARY_PICTURES
+              baseTableSchemaName: ${schema.name}
+              constraintName: FK_ORDER_SIMMARY_ORDER_ID
+              onDelete: RESTRICT
+              onUpdate: RESTRICT
+              referencedColumnNames: ID_ORDER
+              referencedTableName: ORDER_SUMMARY
+              referencedTableSchemaName: ${schema.name}
+
+  - changeSet:
+      id: 6
+      author: sirosh
+      comment: Picture checksum foreign key constraint
+      changes:
+          - addForeignKeyConstraint:
+              baseColumnNames: CHECKSUM
+              baseTableName: ORDER_SUMMARY_PICTURES
+              baseTableSchemaName: ${schema.name}
+              constraintName: FK_PICTURE_CHECKSUM
+              onDelete: RESTRICT
+              onUpdate: RESTRICT
+              referencedColumnNames: CHECKSUM
+              referencedTableName: PICTURES
+              referencedTableSchemaName: ${schema.name}
+
+  - changeSet:
+      id: 7
+      author: sirosh
+      comment: Order id - picture checksum relation unique constraint
+      changes:
+          - addUniqueConstraint:
+              columnNames: CHECKSUM,ID_ORDER
+              constraintName: UNQ_CHECKSUM_ID_ORDER
+              schemaName: ${schema.name}
+              tableName: ORDER_SUMMARY_PICTURES

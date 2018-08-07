@@ -4,8 +4,10 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.Table;
 import java.time.Instant;
 
 /**
@@ -18,13 +20,7 @@ import java.time.Instant;
  *         {@code checksum} -- file's checksum
  *     </ul>
  *     <ul>
- *         {@code fileName} -- file's of file with extension
- *     </ul>
- *     <ul>
  *         {@code mimeType} -- MIME type of the file
- *     </ul>
- *     <ul>
- *         {@code directory} -- directory relative to gallery path
  *     </ul>
  *     <ul>
  *         {@code loadedAt} -- Datetime of picture's uploading
@@ -34,16 +30,20 @@ import java.time.Instant;
  * @author Artemis A. Sirosh
  */
 @Entity
+@Table(name = "PICTURES")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class Picture {
 
     @Id
+    @Column(name = "CHECKSUM")
     private String checksum;
-    private String fileName;
+
+    @Column(name = "MIME_TYPE")
     private String mimeType;
-    private String directory;
+
+    @Column(name = "LOADED_AT")
     private Instant loadedAt;
 
 }

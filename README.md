@@ -4,25 +4,26 @@
 
 Out of all the five senses, your vision seems the most important. Humans are fairly unique in their reliance on sight
 as the dominant sense and this is reflected in how complicated our eyes are relative to other creatures. Therefore
-visual aids in human communication very important. **OrVisual** provides opportunity for clients and service maintainer
-to communicate, using visual aids.
+visual aids in human communication very important. **OrVisual** provides an opportunity for clients and service 
+maintainer to communicate, using visual aids.
 
-For an example, let’s take car painting service, when customer makes order, he may need to attach addition info.
-Of course, he may add just textual data to order or maybe talk with service provider using phone, but much easier to
-add some pictures which describes order details.
+For an example, let’s take car painting service when a customer makes an order, he may need to attach addition info.
+Of course, he may add just textual data to order or maybe talk with a service provider using a phone, but much easier 
+to add some pictures which describe order details.
 
-For this **OrVisual** provides API, which allow publish customer contact data and additionally some pictures which
+For this **OrVisual** provides API, which allows to publish customer contact data and add some pictures which
 describes order.
 
 ## Service API
 
-OrVisual service using **Spring Boot**, built up as RESTful service with [HATEOAS](https://en.wikipedia.org/wiki/HATEOAS).
-Additionally there is a Spring MVC controller, which provides access to image files. HATEOAS implemented using
+OrVisual service using **Spring Boot**, built up as RESTful service with 
+[HATEOAS](https://en.wikipedia.org/wiki/HATEOAS). Additionally, there is a Spring MVC controller, which provides access
+to image files. HATEOAS implemented using 
 [Spring Data Rest](https://docs.spring.io/spring-data/rest/docs/current/reference/html/).
 
-At present service have two _resources_: `order` and `picture`. Order represents order summary object.
-Picture represents image file metadata. All resources represents in HAL format, see [Internet Draft](https://tools.ietf.org/html/draft-kelly-json-hal-08)
-for HAL JSON format.
+At present service have two _resources_: `order` and `picture`. The Order represents an *order summary* object.
+The Picture represents *image file metadata*. All resources represent in HAL format, see 
+[Internet Draft](https://tools.ietf.org/html/draft-kelly-json-hal-08) for HAL JSON format.
 
 ### Service metadata
 
@@ -52,13 +53,13 @@ profiles for all endpoint, and also link to itself.
 }
 ```
 
-Thus each resource have description, which available by requesting `/profile/{resource}` endpoints. The response will
-be in a [ALPS](http://alps.io/) format. This format provide descriptions of application-level semantics, see
+Thus each resource has a description, which available by requesting `/profile/{resource}` endpoints. The response will
+be in an [ALPS](http://alps.io/) format. This format provides descriptions of application-level semantics, see
 [Internet Draft](https://tools.ietf.org/html/draft-amundsen-richardson-foster-alps-02).
 
-Obtained response will contain list of descriptors at path `$.alps.descriptors`:
+The obtained response will contain a list of descriptors at path `$.alps.descriptors`:
 
-1. Representation of resource itself, which contains identifier of resource and list of `descriptors`, for each field
+1. Representation of resource itself, which contains an identifier of resource and list of `descriptors`, for each field
     of resource domain object
 
 2. Descriptors for all available operations, which contents return type of operation - `rt` and type of operation, see
@@ -80,15 +81,39 @@ Accept: application/schema+json
 
 Picture resource provides metadata for uploaded file, supply `GET`, `DELETE` methods. All `GET` operations returns
 `200` status code on success. When *delete* operation completes successfully, `204` (*No content*) status will
-returned.
+be returned.
 
-Picture resource contains link to picture file by path `$._links.imageFile.href`.
+Picture resource contains a link to picture file by path `$._links.imageFile.href`.
 
 Delete operation except that removes `Picture` record, also removes picture file from physical storage.
 
 #### Order resource
 
-Will be written as soon as, code will written.
+Order resource provides order data like client's contacts, order execution status and related pictures. Client's 
+contact attributes has constraints:
+
+| Attribute | Constraint | Optional |
+|-----------|------------|----------|
+| `clientName` | not empty or whitespace | no |
+| `clientPhone` | must match `\+?\d+` | no |
+| `clientEmail` | must match `.{2,}[@].{2,}` | yes |
+| `description` | must have length less than 4000 characters | yes |
+
+All these attributes are strings. Optional attributes may not present in the model, but if they present must be valid. 
+Validation applies to `POST`, `PUT` and `PATCH` operations.
+
+Order's status is described by `acceptedAt` and `completedAt` attributes:
+
+| Accepted at | Completed at | Status | Description |
+|-------------|--------------|--------|-------------|
+| `null` | `null` | New | Just created Order |
+| not `null` | `null` | In progress | Order accepted to work |
+| not `null` | not `null` | Completed | Works at Order has been completed |
+| `null` | not `null` | Closed | Order closed without execution |
+
+All new Order has status _new_ i.e. both `acceptedAt` and `completedAt` is `null`.
+
+When an Order removes, all related Pictures will be removed, except Pictures which related to another Order.
 
 ### File resource
 
@@ -101,8 +126,8 @@ This resource has non HATEOAS syntax. Allows exchange image files between servic
 
 #### Upload file
 
-Files should uploaded as `multipart/form-data`, file data should attached to part with name `image`. File's MIME type
-should present in part header. Example:
+Files should be uploaded as `multipart/form-data`, file data should be attached to part with the name `image`. File's 
+MIME type should present in part header. Example:
 
 ```
 POST http://localhost:8080/files
@@ -123,7 +148,7 @@ Constraints for uploaded files:
  * files, which size greater than **10Mb** will be rejected
  * files with no content will be rejected too
  
-Response from server will be in form of **HATEOAS** Picture REST resource:
+Response from a server will be in form of **HATEOAS** Picture REST resource:
 
 ```json
 {
@@ -145,9 +170,9 @@ Response from server will be in form of **HATEOAS** Picture REST resource:
 }
 ``` 
 
-#### Load file
+#### Download file
 
-File may be requested for service by file's **SHA-256** checksum, for example:
+The file may be requested for service by file's **SHA-256** checksum, for example:
 
 ```
 GET http://localhost:8080/files/97df3588b5a3f24babc3851b372f0ba71a9dcdded43b14b9d06961bfc1707d9d
@@ -161,5 +186,49 @@ Date: Sat, 09 Jun 2018 16:59:02 GMT
 [image file binary data]
 ```
 
-If file with given checksum exists it will returned, in headers may be found `Content-Type` header, which represents
-image's type.
+If a file with given checksum exists it will be returned, in headers may be found `Content-Type` header, which 
+represents image's type.
+
+## Deployment
+
+To deploy OrVisual application may be used [Docker](https://www.docker.com/) image. Docker image may be uploaded from
+[Docker Hub](https://hub.docker.com/r/asirosh/orvisual-api/) or built from sources. 
+
+Pull from Docker Hub:
+
+`$ docker pull asirosh/orvisual-api`
+
+Build from sources:
+
+`$ ./gradlew bootJar`
+
+`$ docker build -t orvisual-api .`
+
+### Database
+
+OrVisual use PostgreSQL database, if an application starts first time at given database instance, it applies database 
+migration and creates all database objects required for application. Application creates tables `DATABASECHANGELOG` 
+and `DATABASECHANGELOGLOCK` in default schema (in this case PUBLIC).
+
+### Data storage
+
+Application uses [Amazon S3](https://aws.amazon.com/s3/getting-started/?nc=sn&loc=5&dn=1) cloud for the file storage. 
+For deploy, an application should be set Amazon S3 access key, secret and bucket name.
+
+### Docker image usage
+
+For successful deploy of OrVisual application, when docker container creating should be set next system environment 
+properties:
+
+| Name | Description |
+|------|-------------|
+| `DB_URL` | Database URL |
+| `DB_USER` | Database user |
+| `DB_PASSWD` | Database password |
+| `DB_SCHEMA` | Database schema |
+| `AWS_ACCESS_KEY_ID` | Amazon S3 key |
+| `AWS_SECRET_ACCESS_KEY` | Amazon S3 secret |
+| `AWS_REGION` | Amazon region |
+| `AWS_BUCKET_NAME` | Amazon Bucket name |
+
+Additionally, for the application be able to communicate with network containers port 8080 must be exposed. 
