@@ -10,7 +10,7 @@ pipelines:
           - bash ./gradlew --no-daemon test
 
   branches:
-    iss11:
+    master:
       - step:
           name: Run tests
           caches:
