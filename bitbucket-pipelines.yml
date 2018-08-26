@@ -25,4 +25,15 @@ pipelines:
             - bash ./gradlew --no-daemon bootJar
           artifacts:
             - build/libs/*
-
+      -step:
+          name: Build and deploy Docker image
+          caches:
+            - docker
+            - gradle
+          services:
+            - docker
+          script:
+            - export IMAGE_TAG=$(bash ./gradlew properties -q --no-daemon | grep "version:" | awk '{print $2}' | tr -d '[:space:]')
+            - docker build -t asirosh/orvisual-api:$IMAGE_TAG .
+            - docker login -u $DOCKER_HUB_USERNAME -p $DOCKER_HUB_PASSWORD
+            - docker push asirosh/orvisual-api:$IMAGE_TAG
