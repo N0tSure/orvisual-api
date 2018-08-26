@@ -1,21 +1,28 @@
-image: openjdk:8
+image: atlassian/default-image:2
 
 pipelines:
-  branches:
-    master:
-      - step:
-          name: Build and deploy artifact
-          caches:
-            - gradle
-          deployment: test
-          script:
-            - bash ./gradlew --no-daemon bootJar
-            - curl -i -X POST --user "${BB_AUTH_STRING}" "https://api.bitbucket.org/2.0/repositories/${BITBUCKET_REPO_OWNER}/${BITBUCKET_REPO_SLUG}/downloads" --form files=@"$(ls build/libs/orvisual-api-*.jar)"
+  default:
+    - step:
+        name: Run tests
+        caches:
+          - gradle
+        script:
+          - bash ./gradlew --no-daemon test
 
-    develop:
+  branches:
+    iss11:
       - step:
           name: Run tests
           caches:
             - gradle
           script:
             - bash ./gradlew --no-daemon test
+      - step:
+          name: Build artifact
+          caches:
+            - gradle
+          script:
+            - bash ./gradlew --no-daemon bootJar
+          artifacts:
+            - build/libs/*
+
