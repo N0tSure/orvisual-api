@@ -1,21 +1,39 @@
-image: openjdk:8
+image: atlassian/default-image:2
 
 pipelines:
+  default:
+    - step:
+        name: Run tests
+        caches:
+          - gradle
+        script:
+          - bash ./gradlew --no-daemon test
+
   branches:
     master:
-      - step:
-          name: Build and deploy artifact
-          caches:
-            - gradle
-          deployment: test
-          script:
-            - bash ./gradlew --no-daemon bootJar
-            - curl -i -X POST --user "${BB_AUTH_STRING}" "https://api.bitbucket.org/2.0/repositories/${BITBUCKET_REPO_OWNER}/${BITBUCKET_REPO_SLUG}/downloads" --form files=@"$(ls build/libs/orvisual-api-*.jar)"
-
-    develop:
       - step:
           name: Run tests
           caches:
             - gradle
           script:
             - bash ./gradlew --no-daemon test
+      - step:
+          name: Build artifact
+          caches:
+            - gradle
+          script:
+            - bash ./gradlew --no-daemon bootJar
+          artifacts:
+            - build/libs/*
+      - step:
+          name: Build and deploy Docker image
+          caches:
+            - docker
+            - gradle
+          services:
+            - docker
+          script:
+            - export IMAGE_TAG=$(bash ./gradlew properties -q --no-daemon | grep "version:" | awk '{print $2}' | tr -d '[:space:]')
+            - docker build -t asirosh/orvisual-api:$IMAGE_TAG .
+            - docker login -u $DOCKER_HUB_USERNAME -p $DOCKER_HUB_PASSWORD
+            - docker push asirosh/orvisual-api:$IMAGE_TAG

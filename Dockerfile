@@ -1,6 +1,8 @@
 # This image provides runtime environment for OrVisual API service
+#
+FROM openjdk:10.0.2-jre-slim
 
-FROM openjdk:10.0.2-13
+LABEL maintainer="Artemis Sirosh <ASir2089@gmail.com>"
 
 COPY build/libs/orvisual-api-*.jar /srv/
 
@@ -10,7 +12,3 @@ CMD "$JAVA_HOME/bin/java" --add-modules java.xml.bind \
     -Dspring.datasource.password=$DB_PASSWD \
     -Dspring.jpa.properties.hibernate.default_schema=$DB_SCHEMA \
     -jar `ls -1 /srv/orvisual-api-*.jar`
-
-
-
-
