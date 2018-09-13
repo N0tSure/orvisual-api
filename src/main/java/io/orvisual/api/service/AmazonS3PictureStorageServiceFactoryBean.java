@@ -39,7 +39,7 @@ import org.springframework.stereotype.Component;
  * @see Regions
  * @author Artemis A. Sirosh
  */
-@Component
+//@Component
 public class AmazonS3PictureStorageServiceFactoryBean extends
         AbstractFactoryBean<AmazonS3PictureStorageService> implements EnvironmentAware {
 
