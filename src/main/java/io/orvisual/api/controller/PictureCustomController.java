@@ -2,7 +2,6 @@ package io.orvisual.api.controller;
 
 import io.orvisual.api.model.Picture;
 import io.orvisual.api.repository.PictureRepository;
-import io.orvisual.api.service.FileSystemPictureStorageServiceFactoryBean;
 import io.orvisual.api.service.PictureStorageService;
 import org.springframework.data.rest.webmvc.RepositoryRestController;
 import org.springframework.http.ResponseEntity;

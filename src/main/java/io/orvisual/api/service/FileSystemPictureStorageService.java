@@ -23,9 +23,9 @@ import java.util.Optional;
  *
  * This method provides operation with image files and it's metadata objects
  * ({@link Picture}). For instantiate use
- * {@link FileSystemPictureStorageServiceFactoryBean}.
+ * {@link PictureStorageServiceFactoryBean}.
  *
- * @see FileSystemPictureStorageServiceFactoryBean
+ * @see PictureStorageServiceFactoryBean
  * @author Artemis A. Sirosh
  */
 class FileSystemPictureStorageService implements PictureStorageService {
